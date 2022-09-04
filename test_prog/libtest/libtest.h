@@ -1,0 +1,8 @@
+#ifndef LIB_TEST_H_
+#define LIB_TEST_H_
+
+int libtest_version();
+
+int libtest_add(int a, int b);
+
+#endif
