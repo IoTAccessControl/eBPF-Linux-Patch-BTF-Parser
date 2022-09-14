@@ -1,2 +1,6 @@
+.vscode
 deps/
 test_prog/bin
+# btf_parser/btfparse
+# btf_parser/build
+# btf_writer/write_elf

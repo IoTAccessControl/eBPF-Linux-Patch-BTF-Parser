@@ -1,0 +1,37 @@
+diff --git a/src/btf.c b/src/btf.c
+index ae1520f..52aa573 100644
+--- a/src/btf.c
++++ b/src/btf.c
+@@ -1591,6 +1591,19 @@ int btf__find_str(struct btf *btf, const char *s)
+ 	return btf->start_str_off + off;
+ }
+ 
++// BKDR Hash Function
++unsigned int BKDRHash(const char* str, unsigned int len)
++{
++    unsigned int seed = 131; // 31 131 1313 13131 131313 etc..
++    unsigned int hash = 0;
++
++    for(int i = 0; i < len; ++i) {
++        hash = hash * seed + (*str++);
++    }
++
++    return (hash & 0x7FFFFFFF);
++}
++
+ /* Add a string s to the BTF string section.
+  * Returns:
+  *   - > 0 offset into string section, on success;
+@@ -1609,7 +1622,11 @@ int btf__add_str(struct btf *btf, const char *s)
+ 	if (btf_ensure_modifiable(btf))
+ 		return libbpf_err(-ENOMEM);
+ 
+-	off = strset__add_str(btf->strs_set, s);
++	// FIXME: IMPORTANT!!!
++	// off = strset__add_str(btf->strs_set, s);
++	char buf[64] = {0};
++	sprintf(buf, "%d", BKDRHash(s, 32));
++	off = strset__add_str(btf->strs_set, buf);
+ 	if (off < 0)
+ 		return libbpf_err(off);
+ 
