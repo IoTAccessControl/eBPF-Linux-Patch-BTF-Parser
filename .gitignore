@@ -4,3 +4,11 @@ test_prog/bin
 # btf_parser/btfparse
 # btf_parser/build
 # btf_writer/write_elf
+test_prog/apache/apr-1.6.5
+test_prog/apache/apr-1.6.5.tar.gz
+test_prog/apache/apr-util-1.6.1
+test_prog/apache/apr-util-1.6.1.tar.gz
+test_prog/apache/httpd-2.4.54
+test_prog/apache/httpd-2.4.54.tar.gz
+test_prog/memcached_test/memcached_1
+test_prog/nginx_test/nginx_1

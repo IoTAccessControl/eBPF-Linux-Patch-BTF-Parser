@@ -23,18 +23,12 @@ unsigned int BKDRHash(const char *str, unsigned int len)
     return (hash & 0x7FFFFFFF);
 }
 
-int main(int argc, char *argv[])
+// ONLY add a .FUNC section, lack other necessary ops
+int add_section(const char *filename)
 {
-    // 参数错误
-    if (argc != 2)
-    {
-        printf("invalid arguments\n");
-        exit(-1);
-    }
-
     // 打开文件
     FILE *fp; int fd;
-    const char *filename = argv[1];
+    // const char *filename = argv[1];
     fp = fopen(filename, "r+");
     if (fp == NULL)
     {
@@ -171,5 +165,18 @@ int main(int argc, char *argv[])
     if (fd != -1)
         close(fd);
     fclose(fp);
+}
+
+int main(int argc, char *argv[])
+{
+    // 参数错误
+    if (argc != 2)
+    {
+        printf("invalid arguments\n");
+        exit(-1);
+    }
+
+    add_section(argv[1]);
+    
     return 0;
 }
