@@ -1,0 +1,9 @@
+							      >	deregister_tm_clones
+							      >	__do_global_dtors_aux
+							      >	_fini
+							      >	frame_dummy
+							      >	_init
+libtest_add							libtest_add
+libtest_test							libtest_test
+libtest_version							libtest_version
+							      >	register_tm_clones

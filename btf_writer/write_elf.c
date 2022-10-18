@@ -10,13 +10,12 @@
 #include <elf.h>
 
 // BKDR Hash Function
-unsigned int BKDRHash(const char *str, unsigned int len)
+unsigned int BKDRHash(const char *str)
 {
     unsigned int seed = 131; // 31 131 1313 13131 131313 etc..
     unsigned int hash = 0;
 
-    for (int i = 0; i < len; ++i)
-    {
+    while (*str) {
         hash = hash * seed + (*str++);
     }
 
@@ -30,8 +29,7 @@ int add_section(const char *filename)
     FILE *fp; int fd;
     // const char *filename = argv[1];
     fp = fopen(filename, "r+");
-    if (fp == NULL)
-    {
+    if (fp == NULL) {
         printf("fail to open the file\n");
         exit(-1);
     }
@@ -39,39 +37,32 @@ int add_section(const char *filename)
     // 解析head,判断elf文件类型
     Elf64_Ehdr elf_head;
     int ret = fread(&elf_head, sizeof(Elf64_Ehdr), 1, fp);
-    if (ret == 0)
-    {
+    if (ret == 0) {
         printf("fail to read head\n");
         exit(-1);
     }
 
-    if (elf_head.e_ident[0] != 0x7F ||
-        elf_head.e_ident[1] != 'E' ||
-        elf_head.e_ident[2] != 'L' ||
-        elf_head.e_ident[3] != 'F')
-    {
+    if (elf_head.e_ident[0] != 0x7F || elf_head.e_ident[1] != 'E' ||
+        elf_head.e_ident[2] != 'L' || elf_head.e_ident[3] != 'F') {
         printf("Not a ELF file\n");
         exit(-1);
     }
 
     // 解析section 分配内存 section * 数量
     Elf64_Shdr *shdr = (Elf64_Shdr *)malloc(sizeof(Elf64_Shdr) * elf_head.e_shnum);
-    if (shdr == NULL)
-    {
+    if (shdr == NULL) {
         printf("shdr malloc failed\n");
         exit(-1);
     }
     // 设置fp偏移量 offset
     ret = fseek(fp, elf_head.e_shoff, SEEK_SET); // fseek调整指针的位置，采用参考位置+偏移量
-    if (ret != 0)
-    {
+    if (ret != 0) {
         printf("faile to fseek\n");
         exit(-1);
     }
     // 读取section 到 shdr, 大小为shdr * 数量
     ret = fread(shdr, sizeof(Elf64_Shdr) * elf_head.e_shnum, 1, fp);
-    if (ret == 0)
-    {
+    if (ret == 0) {
         printf("fail to read section\n");
         exit(-1);
     }
@@ -85,16 +76,14 @@ int add_section(const char *filename)
     char *temp = shstrtab;
     // 读取内容
     ret = fread(shstrtab, shdr[elf_head.e_shstrndx].sh_size, 1, fp);
-    if (ret == 0)
-    {
+    if (ret == 0) {
         printf("faile to read\n");
         exit(-1);
     }
 
     // 遍历 1
     uint8_t *str_data;
-    for (int i = 0; i < elf_head.e_shnum; i++)
-    {
+    for (int i = 0; i < elf_head.e_shnum; i++) {
         temp = shstrtab;
         temp = temp + shdr[i].sh_name;
 
@@ -106,8 +95,7 @@ int add_section(const char *filename)
     }
 
     // 遍历 2
-    for (int i = 0; i < elf_head.e_shnum; i++)
-    {
+    for (int i = 0; i < elf_head.e_shnum; i++) {
         temp = shstrtab;
         temp = temp + shdr[i].sh_name;
 
@@ -125,9 +113,8 @@ int add_section(const char *filename)
         int ncount = shdr[i].sh_size / shdr[i].sh_entsize;
 
         // TODO:read and write here, get rid of some unnecessary operations
-        for (int i = 0; i < ncount; ++i)
-        {
-            psym[i].st_name = BKDRHash(psym[i].st_name + str_data, 16);
+        for (int i = 0; i < ncount; ++i) {
+            psym[i].st_name = BKDRHash(psym[i].st_name + str_data);
         }
 
         // add .FUNC section
@@ -139,21 +126,18 @@ int add_section(const char *filename)
             llvm_objcopy = "llvm-objcopy";
         snprintf(tmp_fn, sizeof(tmp_fn), "%s.func", filename);
         fd = creat(tmp_fn, S_IRUSR | S_IWUSR);
-        if (fd == -1)
-        {
+        if (fd == -1) {
             printf("open(%s) failed!\n", tmp_fn);
             exit(-1);
         }
-        if (write(fd, sign_data, sizeof(uint8_t) * shdr[i].sh_size) != sizeof(uint8_t) * shdr[i].sh_size)
-        {
+        if (write(fd, sign_data, sizeof(uint8_t) * shdr[i].sh_size) != sizeof(uint8_t) * shdr[i].sh_size) {
             printf("%s: write of %ld bytes to '%s' failed\n",
                     __func__, sizeof(uint8_t) * shdr[i].sh_size, tmp_fn);
             goto unlink;
         }
         snprintf(cmd, sizeof(cmd), "%s --add-section .FUNC=%s %s",
                  llvm_objcopy, tmp_fn, filename);
-        if (system(cmd))
-        {
+        if (system(cmd)) {
             printf("%s: failed to add .FUNC section to '%s'\n",
                     __func__, filename);
             goto unlink;
@@ -170,9 +154,8 @@ int add_section(const char *filename)
 int main(int argc, char *argv[])
 {
     // 参数错误
-    if (argc != 2)
-    {
-        printf("invalid arguments\n");
+    if (argc != 2) {
+        printf("Usage: ./write_elf elf_path\n");
         exit(-1);
     }
 

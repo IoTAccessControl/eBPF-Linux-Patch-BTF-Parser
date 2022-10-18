@@ -7,12 +7,12 @@ index ae1520f..52aa573 100644
  }
  
 +// BKDR Hash Function
-+unsigned int BKDRHash(const char* str, unsigned int len)
++unsigned int BKDRHash(const char* str)
 +{
 +    unsigned int seed = 131; // 31 131 1313 13131 131313 etc..
 +    unsigned int hash = 0;
 +
-+    for(int i = 0; i < len; ++i) {
++    while (*str) {
 +        hash = hash * seed + (*str++);
 +    }
 +
@@ -30,7 +30,7 @@ index ae1520f..52aa573 100644
 +	// FIXME: IMPORTANT!!!
 +	// off = strset__add_str(btf->strs_set, s);
 +	char buf[64] = {0};
-+	sprintf(buf, "%d", BKDRHash(s, 32));
++	sprintf(buf, "%d", BKDRHash(s));
 +	off = strset__add_str(btf->strs_set, buf);
  	if (off < 0)
  		return libbpf_err(off);

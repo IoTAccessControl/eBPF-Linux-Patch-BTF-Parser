@@ -27,7 +27,7 @@ process_elf() {
 	# step-1: gen btf to elf
 	gen_btf_elf
 	# step-2: gen sym to elf
-	gen_sym_elf
+	# gen_sym_elf
 }
 
 process_elf $ELF

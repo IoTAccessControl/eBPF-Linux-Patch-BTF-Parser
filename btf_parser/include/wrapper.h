@@ -1,0 +1,1 @@
+extern "C" int getFuncBTF(const char *elf_path, const char *func_name);
