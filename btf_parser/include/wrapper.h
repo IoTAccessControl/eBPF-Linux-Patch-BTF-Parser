@@ -1,1 +1,1 @@
-extern "C" int getFuncBTF(const char *elf_path, const char *func_name);
+extern "C" int getFuncBTF(const char *elf_path, const char *func_name, const char *flag);
