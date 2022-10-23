@@ -5,16 +5,16 @@ WORK_DIR="$self_dir/../deps"
 
 build_btf_parser() {
 	# 调用btfparse库
+	echo "build btf reader"
 	cd ${self_dir}/../btf_parser/
 	rm -rf build/ btfparse/
-	cp -r ${WORK_DIR}/btfparse/ .
 	mkdir build && cd build
 	cmake .. && make
-	return
 }
 
 build_btf_writer() {
 	# 生成write_elf文件
+	echo "build btf writer"
 	cd ${self_dir}/../btf_writer/
 	gcc -o write_elf write_elf.c
 	return

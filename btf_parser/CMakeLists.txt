@@ -2,12 +2,12 @@ cmake_minimum_required(VERSION 2.8)
 PROJECT(getBTF)
 
 SET(CMAKE_BUILD_TYPE "RelWithDebInfo") # Debug Release RelWithDebInfo MinSizeRel
-FILE(GLOB SOURCE_1 "${CMAKE_SOURCE_DIR}/main.c")
-FILE(GLOB SOURCE_2 "${CMAKE_SOURCE_DIR}/src/wrapper.cpp")
-FILE(GLOB SOURCE_3 "${CMAKE_SOURCE_DIR}/src/utils.cpp")
+FILE(GLOB SRC "${CMAKE_SOURCE_DIR}/main.c"
+	"${CMAKE_SOURCE_DIR}/src/wrapper.cpp"
+	"${CMAKE_SOURCE_DIR}/src/utils.cpp")
 
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/include/")
 ADD_DEFINITIONS("-Wall -Werror -lstdc++") #  -std=c++11
-ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCE_1} ${SOURCE_2} ${SOURCE_3})
+ADD_EXECUTABLE(${PROJECT_NAME} ${SRC})
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} PRIVATE btfparse)
-ADD_SUBDIRECTORY("btfparse")
+ADD_SUBDIRECTORY("../deps/btfparse" libbtfparse)

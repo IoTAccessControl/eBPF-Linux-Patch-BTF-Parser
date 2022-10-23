@@ -1,0 +1,106 @@
+{
+	"types": [
+		{
+			"id": 1,
+			"kind": "STRUCT",
+			"name": "A",
+			"size": 8,
+			"vlen": 2,
+			"members": [
+				{
+					"name": "b",
+					"type_id": 2,
+					"bits_offset": 0
+				},
+				{
+					"name": "a",
+					"type_id": 3,
+					"bits_offset": 32
+				}
+			]
+		},
+		{
+			"id": 2,
+			"kind": "INT",
+			"name": "char",
+			"size": 1,
+			"bits_offset": 0,
+			"nr_bits": 8,
+			"encoding": "(none)"
+		},
+		{
+			"id": 3,
+			"kind": "INT",
+			"name": "int",
+			"size": 4,
+			"bits_offset": 0,
+			"nr_bits": 32,
+			"encoding": "SIGNED"
+		},
+		{
+			"id": 4,
+			"kind": "PTR",
+			"name": "(anon)",
+			"type_id": 1
+		},
+		{
+			"id": 5,
+			"kind": "FUNC_PROTO",
+			"name": "(anon)",
+			"ret_type_id": 3,
+			"vlen": 1,
+			"params": [
+				{
+					"name": "t",
+					"type_id": 4
+				}
+			]
+		},
+		{
+			"id": 6,
+			"kind": "FUNC",
+			"name": "libtest_test",
+			"type_id": 5,
+			"linkage": "static"
+		},
+		{
+			"id": 7,
+			"kind": "FUNC_PROTO",
+			"name": "(anon)",
+			"ret_type_id": 3,
+			"vlen": 2,
+			"params": [
+				{
+					"name": "a",
+					"type_id": 3
+				},
+				{
+					"name": "b",
+					"type_id": 3
+				}
+			]
+		},
+		{
+			"id": 8,
+			"kind": "FUNC",
+			"name": "libtest_add",
+			"type_id": 7,
+			"linkage": "static"
+		},
+		{
+			"id": 9,
+			"kind": "FUNC_PROTO",
+			"name": "(anon)",
+			"ret_type_id": 3,
+			"vlen": 0,
+			"params": []
+		},
+		{
+			"id": 10,
+			"kind": "FUNC",
+			"name": "libtest_version",
+			"type_id": 9,
+			"linkage": "static"
+		}
+	]
+}

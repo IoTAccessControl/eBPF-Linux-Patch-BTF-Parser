@@ -1,0 +1,182 @@
+{
+	"types": [
+		{
+			"id": 1,
+			"kind": "STRUCT",
+			"name": "A",
+			"size": 8,
+			"vlen": 2,
+			"members": [
+				{
+					"name": "b",
+					"type_id": 2,
+					"bits_offset": 0
+				},
+				{
+					"name": "a",
+					"type_id": 4,
+					"bits_offset": 32
+				}
+			]
+		},
+		{
+			"id": 2,
+			"kind": "INT",
+			"name": "char",
+			"size": 1,
+			"bits_offset": 0,
+			"nr_bits": 8,
+			"encoding": "(none)"
+		},
+		{
+			"id": 3,
+			"kind": "CONST",
+			"name": "(anon)",
+			"type_id": 2
+		},
+		{
+			"id": 4,
+			"kind": "INT",
+			"name": "int",
+			"size": 4,
+			"bits_offset": 0,
+			"nr_bits": 32,
+			"encoding": "SIGNED"
+		},
+		{
+			"id": 5,
+			"kind": "INT",
+			"name": "long unsigned int",
+			"size": 8,
+			"bits_offset": 0,
+			"nr_bits": 64,
+			"encoding": "(none)"
+		},
+		{
+			"id": 6,
+			"kind": "INT",
+			"name": "unsigned int",
+			"size": 4,
+			"bits_offset": 0,
+			"nr_bits": 32,
+			"encoding": "(none)"
+		},
+		{
+			"id": 7,
+			"kind": "INT",
+			"name": "unsigned char",
+			"size": 1,
+			"bits_offset": 0,
+			"nr_bits": 8,
+			"encoding": "(none)"
+		},
+		{
+			"id": 8,
+			"kind": "INT",
+			"name": "short unsigned int",
+			"size": 2,
+			"bits_offset": 0,
+			"nr_bits": 16,
+			"encoding": "(none)"
+		},
+		{
+			"id": 9,
+			"kind": "INT",
+			"name": "signed char",
+			"size": 1,
+			"bits_offset": 0,
+			"nr_bits": 8,
+			"encoding": "(none)"
+		},
+		{
+			"id": 10,
+			"kind": "INT",
+			"name": "short int",
+			"size": 2,
+			"bits_offset": 0,
+			"nr_bits": 16,
+			"encoding": "SIGNED"
+		},
+		{
+			"id": 11,
+			"kind": "INT",
+			"name": "long int",
+			"size": 8,
+			"bits_offset": 0,
+			"nr_bits": 64,
+			"encoding": "SIGNED"
+		},
+		{
+			"id": 12,
+			"kind": "PTR",
+			"name": "(anon)",
+			"type_id": 2
+		},
+		{
+			"id": 13,
+			"kind": "PTR",
+			"name": "(anon)",
+			"type_id": 1
+		},
+		{
+			"id": 14,
+			"kind": "PTR",
+			"name": "(anon)",
+			"type_id": 3
+		},
+		{
+			"id": 15,
+			"kind": "PTR",
+			"name": "(anon)",
+			"type_id": 12
+		},
+		{
+			"id": 16,
+			"kind": "FUNC_PROTO",
+			"name": "(anon)",
+			"ret_type_id": 4,
+			"vlen": 2,
+			"params": [
+				{
+					"name": "argc",
+					"type_id": 4
+				},
+				{
+					"name": "argv",
+					"type_id": 15
+				}
+			]
+		},
+		{
+			"id": 17,
+			"kind": "FUNC",
+			"name": "main",
+			"type_id": 16,
+			"linkage": "static"
+		},
+		{
+			"id": 18,
+			"kind": "FUNC_PROTO",
+			"name": "(anon)",
+			"ret_type_id": 4,
+			"vlen": 2,
+			"params": [
+				{
+					"name": "a",
+					"type_id": 4
+				},
+				{
+					"name": "b",
+					"type_id": 4
+				}
+			]
+		},
+		{
+			"id": 19,
+			"kind": "FUNC",
+			"name": "buggy_func",
+			"type_id": 18,
+			"linkage": "static"
+		}
+	]
+}
