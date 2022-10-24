@@ -9,7 +9,9 @@ build_btfparser() {
 		git clone --recursive https://github.com/trailofbits/btfparse.git
 		cd btfparse
 		git checkout tags/v1.1 -b tag-v1.1
+		git apply /home/ubuntu/Documents/eBPF-Linux-Patch-BTF-Parser_old1/btf_parser/btfparse/build/dump-btf.patch
 		cd ..
+		
 	fi
 	echo -e "\033[34mBuild btfparser to btfparse-build\033[0m"
 	rm -rf btfparse-build

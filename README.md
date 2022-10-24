@@ -35,13 +35,23 @@ bash btf_writer/gen_btf.sh file_with_debuginfo
 ```
 ![](test_prog/apache_test/apache_1.png)
 
-3. 解析BTF信息，参数为elf路径和欲查找函数名（为方便测试，目前实现的是打印BTF中的所有函数名，若找到输入中的函数，则会额外打印Found）
+3. 解析二进制中BTF section的内容
 ```bash
-./btf_parser/build/getBTF elf_path func_name
+/deps/btfparse-build/tools/dump-btf/dump-btf file_with_btfsection
 ```
-![](test_prog/apache_test/apache_3.png)
+![](test_prog/apache_test/apache_5.png)
 
-4. 比较nm -s输出的函数信息和btfparse库解析的是否相同
+4. 得到某个函数的BTF信息，参数为elf路径和欲查找函数名(./btf_parser/build/getBTF elf_path func_name [single],  single 是可选参数)
+- 不带single参数，打印BTF中的所有函数名，若找到输入中的函数，则会额外打印Found
+	```bash
+	./btf_parser/build/getBTF elf_path func_name
+	```
+	![](test_prog/apache_test/apache_3.png)
+
+- 带single参数，打印函数func_name的详细信息,例如
+	![](test_prog/openssl_test/openssl_5.png)
+
+5. 比较nm -s输出的函数信息和btfparse库解析的是否相同
 ```bash
 python btf_parser/check.py file_with_debuginfo
 ```
