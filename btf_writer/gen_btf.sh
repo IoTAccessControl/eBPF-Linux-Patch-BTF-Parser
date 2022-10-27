@@ -5,17 +5,9 @@ WORK_DIR="$self_dir/../deps"
 
 ELF=$1
 Pahole=${WORK_DIR}/dwarves-build/pahole
-Write_elf=${self_dir}/../btf_writer/write_elf
+Write_elf=${self_dir}/write_elf
 
-gen_btf_elf() {
-	$Pahole -J $ELF
-	return
-}
-
-gen_sym_elf() {
-	$Write_elf $ELF
-	return
-}
+# echo "self dir: ${self_dir}"
 
 process_elf() {
 	# elf=$1
@@ -25,9 +17,9 @@ process_elf() {
 	fi
 
 	# step-1: gen btf to elf
-	gen_btf_elf
+	$Pahole -J $ELF
 	# step-2: gen sym to elf
-	# gen_sym_elf
+	$Write_elf $ELF
 }
 
 process_elf $ELF

@@ -13,3 +13,4 @@ target_simple: target_libtest | dir_bin
 
 clean:
 	rm -rf bin
+	rm -rf bin_btf

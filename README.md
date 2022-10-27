@@ -2,13 +2,13 @@
 1. 安装依赖  
 ```
 sudo apt install git vim clang cmake build-essential g++ git zlib1g-dev llvm python3 python3-pip iproute2 libelf-dev \
-	 libdw-dev 
+	 libdw-dev libpcre3-dev
 ```
 
 2. build  
 ```
 bash scripts/build_all.sh  
-# bash scripts/build_deps.sh，后面deps编译好  
+# bash scripts/build_deps.sh # 单独编译deps，修改pahole之后需要单独编译  
 ```
 
 ### TODO  

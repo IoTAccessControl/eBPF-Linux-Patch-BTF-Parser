@@ -31,7 +31,7 @@ build_pahole() {
 		cd dwarves
 		git checkout tags/v1.22 -b tag-v1.22
 		cd ..
-		# 应用匿名化
+		# 应用函数匿名化patch
 		# cd dwarves/lib/bpf/
 		# git apply ${self_dir}/../pahole_patch/pahole.patch
 		# cd -
