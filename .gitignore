@@ -4,3 +4,5 @@ btf_writer/write_elf
 btf_parser/btfparse/
 btf_parser/build/
 bin/
+nginx-1.22.1/
+bin_*/
