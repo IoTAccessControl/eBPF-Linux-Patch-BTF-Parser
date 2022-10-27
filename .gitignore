@@ -5,6 +5,7 @@ btf_parser/btfparse/
 btf_parser/build/
 bin/
 nginx-1.22.1/
+openssl-1.1.1q/
 bin_btf/
 dump_btf
 write_elf

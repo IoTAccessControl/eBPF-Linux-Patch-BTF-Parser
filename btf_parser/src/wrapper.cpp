@@ -116,6 +116,12 @@ int dumpAndParse(const char *elf_path, const char *func_name, const char *flag)
 
         if (fd != -1)
             close(fd);
+        if (access(tmp_fn, F_OK) != -1) {
+            if (remove(tmp_fn) != 0) {
+                printf("delete file %s failed\n", tmp_fn);
+                exit(-1);
+            }
+        }
     }
     return 0;
 }
