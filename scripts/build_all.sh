@@ -21,7 +21,8 @@ build_btf_writer() {
 }
 
 build_all() {
-	if [ ! -f ${WORK_DIR}/btfparse-build/btfparse/btfparse/libbtfparse.a ]; then
+	if [[ (! -f ${WORK_DIR}/btfparse-build/btfparse/btfparse/libbtfparse.a) ||
+		  (! -f ${WORK_DIR}/dwarves-build/pahole ) ]]; then
 		echo -e "\033[34mBuild deps...\033[0m"
 		bash $self_dir/build_deps.sh
 	fi

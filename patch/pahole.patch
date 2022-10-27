@@ -1,37 +1,75 @@
 diff --git a/src/btf.c b/src/btf.c
-index ae1520f..52aa573 100644
+index 3aa58f2..a337a9d 100644
 --- a/src/btf.c
 +++ b/src/btf.c
-@@ -1591,6 +1591,19 @@ int btf__find_str(struct btf *btf, const char *s)
- 	return btf->start_str_off + off;
+@@ -1628,6 +1628,29 @@ int btf__find_str(struct btf *btf, const char *s)
+ 	return -ENOENT;
  }
  
++// Modify for func Anonymous
++FILE *func_map = NULL;
++#define RECORD_FUNC_MAP(fmt, ...) \
++	do { \
++		if (func_map == NULL) func_map = fopen("func_name_hash.txt", "a+"); \
++		fprintf(func_map, fmt, ##__VA_ARGS__); \
++	} while (0);
++
 +// BKDR Hash Function
-+unsigned int BKDRHash(const char* str)
++unsigned int BKDRHash(const char *s)
 +{
-+    unsigned int seed = 131; // 31 131 1313 13131 131313 etc..
-+    unsigned int hash = 0;
++	unsigned int seed = 131; // 31 131 1313 13131 131313 etc..
++	unsigned int hash = 0;
++	char *str = (char *) s;
 +
-+    while (*str) {
-+        hash = hash * seed + (*str++);
-+    }
++	while (*str)
++	{
++		hash = hash * seed + (*str++);
++	}
 +
-+    return (hash & 0x7FFFFFFF);
++	return (hash & 0x7FFFFFFF);
 +}
 +
  /* Add a string s to the BTF string section.
   * Returns:
   *   - > 0 offset into string section, on success;
-@@ -1609,7 +1622,11 @@ int btf__add_str(struct btf *btf, const char *s)
- 	if (btf_ensure_modifiable(btf))
- 		return libbpf_err(-ENOMEM);
+@@ -1639,10 +1662,14 @@ int btf__add_str(struct btf *btf, const char *s)
+ 	void *p;
+ 	int err;
  
--	off = strset__add_str(btf->strs_set, s);
-+	// FIXME: IMPORTANT!!!
-+	// off = strset__add_str(btf->strs_set, s);
-+	char buf[64] = {0};
-+	sprintf(buf, "%d", BKDRHash(s));
-+	off = strset__add_str(btf->strs_set, buf);
- 	if (off < 0)
- 		return libbpf_err(off);
++	// IMPORTANT: Our Fix - Anonymous Function Name
++	char func_hash[64] = {0};
++	sprintf(func_hash, "%u", BKDRHash(s));
++
+ 	if (btf->base_btf) {
+ 		int ret;
  
+-		ret = btf__find_str(btf->base_btf, s);
++		ret = btf__find_str(btf->base_btf, func_hash);
+ 		if (ret != -ENOENT)
+ 			return ret;
+ 	}
+@@ -1658,13 +1685,13 @@ int btf__add_str(struct btf *btf, const char *s)
+ 	 * other hand, if the string is unique, it's already appended and
+ 	 * ready to be used, only a simple btf->hdr->str_len increment away.
+ 	 */
+-	len = strlen(s) + 1;
++	len = strlen(func_hash) + 1;
+ 	p = btf_add_str_mem(btf, len);
+ 	if (!p)
+ 		return -ENOMEM;
+ 
+ 	new_off = btf->hdr->str_len;
+-	memcpy(p, s, len);
++	memcpy(p, func_hash, len);
+ 
+ 	/* Now attempt to add the string, but only if the string with the same
+ 	 * contents doesn't exist already (HASHMAP_ADD strategy). If such
+@@ -1676,6 +1703,8 @@ int btf__add_str(struct btf *btf, const char *s)
+ 		return btf->start_str_off + old_off; /* duplicated string, return existing offset */
+ 	if (err)
+ 		return err;
++	
++	RECORD_FUNC_MAP("%s -> %s\n", s, func_hash);
+ 
+ 	btf->hdr->str_len += len; /* new unique string, adjust data length */
+ 	return btf->start_str_off + new_off;

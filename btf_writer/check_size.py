@@ -25,8 +25,9 @@ def main():
 			tmp = f1_sz
 			f1_sz = f2_sz
 			f2_sz = tmp
-		precent = round((f2_sz - f1_sz) * 100 / f1_sz, 1)
-		print(f"\tincrease: {f1_sz} -> {f2_sz} ({precent}%)")
+		inc_size = f2_sz - f1_sz
+		precent = round(inc_size * 100 / f1_sz, 1)
+		print(f"\tincrease: {f1_sz} -> {f2_sz} ({inc_size} {precent}%)")
 
 if __name__ == "__main__":
 	main()

@@ -9,5 +9,7 @@ FILE(GLOB SRC "${CMAKE_SOURCE_DIR}/main.c"
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/include/")
 ADD_DEFINITIONS("-Wall -Werror -lstdc++") #  -std=c++11
 ADD_EXECUTABLE(${PROJECT_NAME} ${SRC})
+set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "parse_btf")
+
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} PRIVATE btfparse)
 ADD_SUBDIRECTORY("../deps/btfparse" libbtfparse)

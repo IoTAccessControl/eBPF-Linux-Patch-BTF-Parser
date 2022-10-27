@@ -16,7 +16,7 @@ def clean():
 
 def gen_diff(file_path):
     try:
-        os.system(self_dir + "/btf_parser/build/getBTF " + file_path + " nothing" + " | sort -t \":\" -k 2 > funclist")
+        os.system(self_dir + "/btf_parser/build/paser_btf " + file_path + " all" + " | sort -t \":\" -k 2 > funclist")
     except IOError:
         print("Error: read BTF info failed\n")
 

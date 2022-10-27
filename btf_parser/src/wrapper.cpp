@@ -329,7 +329,7 @@ bool parseTypes(const std::filesystem::path &filePath, const std::string &funcNa
             const auto &btf_func = std::get<btfparse::FuncBTFType>(btf_type);
             if (flag.compare("all") == 0)
             {
-                std::cout << std::to_string(id) << ": \t";
+                std::cout << "[" << std::to_string(id) << "]" << ": \t";
                 std::cout << btf_func.name;
                 if (btf_func.name.compare(funcName) == 0)
                 {

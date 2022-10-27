@@ -9,9 +9,8 @@ build_btfparser() {
 		git clone --recursive https://github.com/trailofbits/btfparse.git
 		cd btfparse
 		git checkout tags/v1.1 -b tag-v1.1
-		git apply /home/ubuntu/Documents/eBPF-Linux-Patch-BTF-Parser_old1/btf_parser/btfparse/build/dump-btf.patch
+		git apply ${self_dir}/../patch/dump-btf.patch
 		cd ..
-		
 	fi
 	echo -e "\033[34mBuild btfparser to btfparse-build\033[0m"
 	rm -rf btfparse-build
@@ -22,7 +21,7 @@ build_btfparser() {
 		-DBTFPARSE_ENABLE_TOOLS=true \
 		-DBTFPARSE_ENABLE_TESTS=true
 	cmake --build btfparse-build  -j $(nproc)
-	return
+	cp ${WORK_DIR}/btfparse-build/tools/dump-btf/dump-btf ${self_dir}/../btf_parser/dump_btf
 }
 
 build_pahole() {
@@ -33,10 +32,6 @@ build_pahole() {
 		cd dwarves
 		git checkout tags/v1.22 -b tag-v1.22
 		cd ..
-		# 应用函数匿名化patch
-		# cd dwarves/lib/bpf/
-		# git apply ${self_dir}/../pahole_patch/pahole.patch
-		# cd -
 	fi
 	echo -e "\033[34mBuild dwarves to dwarves-build\033[0m"
 	rm -rf dwarves-build
@@ -45,6 +40,11 @@ build_pahole() {
 		-B dwarves-build \
 		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
 		-D__LIB=lib ..
+	# 应用函数匿名化patch
+	cd ${WORK_DIR}/dwarves/lib/bpf/
+	git reset --hard HEAD@{0}
+	git apply ${self_dir}/../patch/pahole.patch
+	cd -
 	cmake --build dwarves-build  -j $(nproc)
 	return
 }
