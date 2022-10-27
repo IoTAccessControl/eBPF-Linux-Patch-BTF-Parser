@@ -1,11 +1,58 @@
 diff --git a/src/btf.c b/src/btf.c
-index 3aa58f2..a337a9d 100644
+index 3aa58f2..cada5f4 100644
 --- a/src/btf.c
 +++ b/src/btf.c
-@@ -1628,6 +1628,29 @@ int btf__find_str(struct btf *btf, const char *s)
- 	return -ENOENT;
+@@ -27,6 +27,9 @@
+ 
+ static struct btf_type btf_void;
+ 
++static int btf__add_anony_func_str(struct btf *btf, const char *s);
++static int btf__add_raw_str(struct btf *btf, const char *s);
++
+ struct btf {
+ 	/* raw BTF data in native endianness */
+ 	void *raw_data;
+@@ -1635,6 +1638,8 @@ int btf__find_str(struct btf *btf, const char *s)
+  */
+ int btf__add_str(struct btf *btf, const char *s)
+ {
++	return btf__add_anony_func_str(btf, "");
++	// return 0;
+ 	long old_off, new_off, len;
+ 	void *p;
+ 	int err;
+@@ -1676,7 +1681,7 @@ int btf__add_str(struct btf *btf, const char *s)
+ 		return btf->start_str_off + old_off; /* duplicated string, return existing offset */
+ 	if (err)
+ 		return err;
+-
++	
+ 	btf->hdr->str_len += len; /* new unique string, adjust data length */
+ 	return btf->start_str_off + new_off;
+ }
+@@ -1830,7 +1835,16 @@ static int btf_add_ref_kind(struct btf *btf, int kind, const char *name, int ref
+ 		return -ENOMEM;
+ 
+ 	if (name && name[0]) {
+-		name_off = btf__add_str(btf, name);
++		switch (kind) {
++		case BTF_KIND_FUNC:
++			name_off = btf__add_anony_func_str(btf, name);
++			break;
++		case BTF_KIND_INT:
++			name_off = btf__add_raw_str(btf, name);
++			break;
++		default:
++			name_off = btf__add_anony_func_str(btf, "");
++		}
+ 		if (name_off < 0)
+ 			return name_off;
+ 	}
+@@ -2212,6 +2226,139 @@ int btf__add_restrict(struct btf *btf, int ref_type_id)
+ 	return btf_add_ref_kind(btf, BTF_KIND_RESTRICT, NULL, ref_type_id);
  }
  
++
 +// Modify for func Anonymous
 +FILE *func_map = NULL;
 +#define RECORD_FUNC_MAP(fmt, ...) \
@@ -15,7 +62,8 @@ index 3aa58f2..a337a9d 100644
 +	} while (0);
 +
 +// BKDR Hash Function
-+unsigned int BKDRHash(const char *s)
++int func_idx = 0;
++unsigned short BKDRHash(const char *s)
 +{
 +	unsigned int seed = 131; // 31 131 1313 13131 131313 etc..
 +	unsigned int hash = 0;
@@ -26,50 +74,117 @@ index 3aa58f2..a337a9d 100644
 +		hash = hash * seed + (*str++);
 +	}
 +
-+	return (hash & 0x7FFFFFFF);
++	// return func_idx;
++	// return (hash & 0x7FFFFFFF);
++	return (hash & 0x7FFF);
 +}
 +
- /* Add a string s to the BTF string section.
-  * Returns:
-  *   - > 0 offset into string section, on success;
-@@ -1639,10 +1662,14 @@ int btf__add_str(struct btf *btf, const char *s)
- 	void *p;
- 	int err;
- 
++int btf__add_anony_func_str(struct btf *btf, const char *s) {
++	long old_off, new_off, len;
++	void *p;
++	int err;
++
++	// IMPORTANT: Our Fix - Anonymous Function Name
++	char func_hash[64] = {0};
++	sprintf(func_hash, "%hu", BKDRHash(s));
++
++	if (btf->base_btf) {
++		int ret;
++
++		ret = btf__find_str(btf->base_btf, func_hash);
++		if (ret != -ENOENT)
++			return ret;
++	}
++
++	if (btf_ensure_modifiable(btf))
++		return -ENOMEM;
++
++	/* Hashmap keys are always offsets within btf->strs_data, so to even
++	 * look up some string from the "outside", we need to first append it
++	 * at the end, so that it can be addressed with an offset. Luckily,
++	 * until btf->hdr->str_len is incremented, that string is just a piece
++	 * of garbage for the rest of BTF code, so no harm, no foul. On the
++	 * other hand, if the string is unique, it's already appended and
++	 * ready to be used, only a simple btf->hdr->str_len increment away.
++	 */
++	len = strlen(func_hash) + 1;
++	p = btf_add_str_mem(btf, len);
++	if (!p)
++		return -ENOMEM;
++
++	new_off = btf->hdr->str_len;
++	memcpy(p, func_hash, len);
++
++	/* Now attempt to add the string, but only if the string with the same
++	 * contents doesn't exist already (HASHMAP_ADD strategy). If such
++	 * string exists, we'll get its offset in old_off (that's old_key).
++	 */
++	err = hashmap__insert(btf->strs_hash, (void *)new_off, (void *)new_off,
++			      HASHMAP_ADD, (const void **)&old_off, NULL);
++	if (err == -EEXIST)
++		return btf->start_str_off + old_off; /* duplicated string, return existing offset */
++	if (err)
++		return err;
++	
++	RECORD_FUNC_MAP("%s %s\n", s, func_hash);
++
++	btf->hdr->str_len += len; /* new unique string, adjust data length */
++	return btf->start_str_off + new_off;
++}
++
++static int btf__add_raw_str(struct btf *btf, const char *s) {
++	long old_off, new_off, len;
++	void *p;
++	int err;
++
 +	// IMPORTANT: Our Fix - Anonymous Function Name
 +	char func_hash[64] = {0};
 +	sprintf(func_hash, "%u", BKDRHash(s));
 +
- 	if (btf->base_btf) {
- 		int ret;
- 
--		ret = btf__find_str(btf->base_btf, s);
++	if (btf->base_btf) {
++		int ret;
++
 +		ret = btf__find_str(btf->base_btf, func_hash);
- 		if (ret != -ENOENT)
- 			return ret;
- 	}
-@@ -1658,13 +1685,13 @@ int btf__add_str(struct btf *btf, const char *s)
- 	 * other hand, if the string is unique, it's already appended and
- 	 * ready to be used, only a simple btf->hdr->str_len increment away.
- 	 */
--	len = strlen(s) + 1;
++		if (ret != -ENOENT)
++			return ret;
++	}
++
++	if (btf_ensure_modifiable(btf))
++		return -ENOMEM;
++
++	/* Hashmap keys are always offsets within btf->strs_data, so to even
++	 * look up some string from the "outside", we need to first append it
++	 * at the end, so that it can be addressed with an offset. Luckily,
++	 * until btf->hdr->str_len is incremented, that string is just a piece
++	 * of garbage for the rest of BTF code, so no harm, no foul. On the
++	 * other hand, if the string is unique, it's already appended and
++	 * ready to be used, only a simple btf->hdr->str_len increment away.
++	 */
 +	len = strlen(func_hash) + 1;
- 	p = btf_add_str_mem(btf, len);
- 	if (!p)
- 		return -ENOMEM;
- 
- 	new_off = btf->hdr->str_len;
--	memcpy(p, s, len);
++	p = btf_add_str_mem(btf, len);
++	if (!p)
++		return -ENOMEM;
++
++	new_off = btf->hdr->str_len;
 +	memcpy(p, func_hash, len);
- 
- 	/* Now attempt to add the string, but only if the string with the same
- 	 * contents doesn't exist already (HASHMAP_ADD strategy). If such
-@@ -1676,6 +1703,8 @@ int btf__add_str(struct btf *btf, const char *s)
- 		return btf->start_str_off + old_off; /* duplicated string, return existing offset */
- 	if (err)
- 		return err;
++
++	/* Now attempt to add the string, but only if the string with the same
++	 * contents doesn't exist already (HASHMAP_ADD strategy). If such
++	 * string exists, we'll get its offset in old_off (that's old_key).
++	 */
++	err = hashmap__insert(btf->strs_hash, (void *)new_off, (void *)new_off,
++			      HASHMAP_ADD, (const void **)&old_off, NULL);
++	if (err == -EEXIST)
++		return btf->start_str_off + old_off; /* duplicated string, return existing offset */
++	if (err)
++		return err;
 +	
 +	RECORD_FUNC_MAP("%s -> %s\n", s, func_hash);
- 
- 	btf->hdr->str_len += len; /* new unique string, adjust data length */
- 	return btf->start_str_off + new_off;
++
++	btf->hdr->str_len += len; /* new unique string, adjust data length */
++	return btf->start_str_off + new_off;
++}
++
+ /*
+  * Append new BTF_KIND_FUNC type with:
+  *   - *name*, non-empty/non-NULL name;

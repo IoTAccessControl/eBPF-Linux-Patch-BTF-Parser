@@ -1,7 +1,9 @@
 #include "libtest.h"
 #include <stdio.h>
 
-int buggy_func(int a, int b) {
+typedef int Val;
+
+int buggy_func(Val a, Val b) {
 	if (a < 2000) {
 		return a + b;
 	}
