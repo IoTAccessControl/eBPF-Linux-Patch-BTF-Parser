@@ -6,7 +6,14 @@ WORK_DIR="$self_dir/../deps"
 cd ${WORK_DIR}/dwarves/lib/bpf/
 git diff > pahole.patch
 git format-patch pahole.patch
-mv pahole.patch ${self_dir}/../patch/pahole.patch
+li=`cat pahole.patch | wc -l`
+if [[ ! li -eq 0 ]]; then
+	echo -e "\e[1;36mOverride Patch file!\033[0m"
+	mv pahole.patch ${self_dir}/../patch/pahole.patch
+else
+	echo "No Changed! Do not need to save Patch."
+fi
+
 
 # Step-2: rebuild dwarves
 echo -e "\033[34mBuild dwarves to dwarves-build\033[0m"
