@@ -8,8 +8,8 @@ build_nginx() {
 		curl http://nginx.org/download/nginx-1.22.1.tar.gz | tar zxvf -
 	fi
 	cd nginx-1.22.1
-	./configure
-	make
+	./configure --prefix=/usr/local/nginx --with-http_ssl_module --with-ld-opt="-L../../02-openssl_test/openssl-3.0.5"
+	make CFLAGS="-g -O0"
 }
 
 pushd ${self_dir}

@@ -1,5 +1,5 @@
 CFLAGS = -g -Wall
-LDFLAGS = -L../openssl-1.1.1q/ -lcrypto
+LDFLAGS = -L../openssl-3.0.5/ -lcrypto
 
 all: hash_file
 
