@@ -41,10 +41,10 @@ build_pahole() {
 		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
 		-D__LIB=lib ..
 	# 应用函数匿名化patch
-	# cd ${WORK_DIR}/dwarves/lib/bpf/
-	# git reset --hard HEAD@{0}
-	# git apply ${self_dir}/../patch/pahole.patch
-	# cd -
+	cd ${WORK_DIR}/dwarves/lib/bpf/
+	git reset --hard HEAD@{0}
+	git apply ${self_dir}/../patch/pahole.patch
+	cd -
 	cmake --build dwarves-build  -j $(nproc)
 	return
 }
@@ -52,7 +52,7 @@ build_pahole() {
 build_deps() {
 	mkdir -p $WORK_DIR
 	build_pahole
-	# build_btfparser
+	build_btfparser
 }
 
 build_deps
