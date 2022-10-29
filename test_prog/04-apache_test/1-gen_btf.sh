@@ -28,5 +28,9 @@ echo "btf size increasing"
 python3 ${root_dir}/btf_writer/check_size.py -c ${self_dir}/bin/httpd ${self_dir}/bin_btf/httpd
 
 echo "increase size after compressed"
-tar -zcvf bin_btf/httpd.tar.gz bin_btf/httpd
+echo "via tar"
+tar -zcvf bin_btf/httpd.tar.gz bin_btf/httpd.btf
 python3 ${root_dir}/btf_writer/check_size.py -a ${self_dir}/bin/httpd ${self_dir}/bin_btf/httpd.tar.gz
+echo "via zip"
+zip bin_btf/httpd.zip bin_btf/httpd.btf
+python3 ${root_dir}/btf_writer/check_size.py -a ${self_dir}/bin/httpd ${self_dir}/bin_btf/httpd.zip

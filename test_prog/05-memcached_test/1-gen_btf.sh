@@ -28,5 +28,9 @@ echo "btf size increasing"
 python3 ${root_dir}/btf_writer/check_size.py -c ${self_dir}/bin/memcached ${self_dir}/bin_btf/memcached
 
 echo "increase size after compressed"
-tar -zcvf bin_btf/memcached.tar.gz bin_btf/memcached
+echo "via tar"
+tar -zcvf bin_btf/memcached.tar.gz bin_btf/memcached.btf
 python3 ${root_dir}/btf_writer/check_size.py -a ${self_dir}/bin/memcached ${self_dir}/bin_btf/memcached.tar.gz
+echo "via zip"
+tar -zcvf bin_btf/memcached.zip bin_btf/memcached.btf
+python3 ${root_dir}/btf_writer/check_size.py -a ${self_dir}/bin/memcached ${self_dir}/bin_btf/memcached.zip

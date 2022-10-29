@@ -35,9 +35,18 @@ python3 ${root_dir}/btf_writer/check_size.py -c ${self_dir}/bin/simple ${self_di
 python3 ${root_dir}/btf_writer/check_size.py -c ${self_dir}/bin/libtest.so ${self_dir}/bin_btf/libtest.so
 
 echo "increase size after compressed"
-tar -zcvf bin_btf/simple.tar.gz bin_btf/simple
+echo "via tar"
+tar -zcvf bin_btf/simple.tar.gz bin_btf/simple.btf
 python3 ${root_dir}/btf_writer/check_size.py -a ${self_dir}/bin/simple ${self_dir}/bin_btf/simple.tar.gz
-tar -zcvf bin_btf/libtest.so.tar.gz bin_btf/libtest.so
+echo "via zip"
+zip bin_btf/simple.zip bin_btf/simple.btf
+python3 ${root_dir}/btf_writer/check_size.py -a ${self_dir}/bin/simple ${self_dir}/bin_btf/simple.zip
+
+echo "via tar"
+tar -zcvf bin_btf/libtest.so.tar.gz bin_btf/libtest.so.btf
 python3 ${root_dir}/btf_writer/check_size.py -a ${self_dir}/bin/libtest.so ${self_dir}/bin_btf/libtest.so.tar.gz
+echo "via zip"
+zip bin_btf/libtest.so.zip bin_btf/libtest.so.btf
+python3 ${root_dir}/btf_writer/check_size.py -a ${self_dir}/bin/libtest.so ${self_dir}/bin_btf/libtest.so.zip
 
 popd

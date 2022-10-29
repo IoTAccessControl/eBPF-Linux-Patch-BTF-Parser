@@ -28,5 +28,9 @@ echo "btf size increasing"
 python3 ${root_dir}/btf_writer/check_size.py -c ${self_dir}/bin/libcrypto.so.3 ${self_dir}/bin_btf/libcrypto.so.3
 
 echo "increase size after compressed"
-tar -zcvf bin_btf/libcrypto.so.3.tar.gz bin_btf/libcrypto.so.3
+echo "via tar"
+tar -zcvf bin_btf/libcrypto.so.3.tar.gz bin_btf/libcrypto.so.3.btf
 python3 ${root_dir}/btf_writer/check_size.py -a ${self_dir}/bin/libcrypto.so.3 ${self_dir}/bin_btf/libcrypto.so.3.tar.gz
+echo "via zip"
+zip bin_btf/libcrypto.so.3.zip bin_btf/libcrypto.so.3.btf
+python3 ${root_dir}/btf_writer/check_size.py -a ${self_dir}/bin/libcrypto.so.3 ${self_dir}/bin_btf/libcrypto.so.3.zip
