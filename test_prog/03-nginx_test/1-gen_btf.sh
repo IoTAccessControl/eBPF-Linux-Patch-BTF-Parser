@@ -28,5 +28,5 @@ echo "btf size increasing"
 python3 ${root_dir}/btf_writer/check_size.py -c ${self_dir}/bin/nginx ${self_dir}/bin_btf/nginx
 
 echo "increase size after compressed"
-tar -zcvf bin_btf/nginx.tar.gz bin_btf/nginx.btf
+tar -zcvf bin_btf/nginx.tar.gz bin_btf/nginx
 python3 ${root_dir}/btf_writer/check_size.py -a ${self_dir}/bin/nginx ${self_dir}/bin_btf/nginx.tar.gz

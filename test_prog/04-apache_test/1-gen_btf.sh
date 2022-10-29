@@ -18,10 +18,15 @@ cp -r bin/ bin_btf/
 # step 1: gen BTF
 ${root_dir}/deps/dwarves-build/pahole -J ${self_dir}/bin_btf/httpd
 mv func_name_hash.txt bin_btf/func_name_hash.txt
+${root_dir}/btf_parser/dump_btf ${self_dir}/bin_btf/httpd > ${self_dir}/bin_btf/httpd_btf.txt
 
 # step 2: strip
 strip ${self_dir}/bin/httpd
 strip ${self_dir}/bin_btf/httpd
 
 echo "btf size increasing"
-python3 ${root_dir}/btf_writer/check_size.py ${self_dir}/bin/httpd ${self_dir}/bin_btf/httpd
+python3 ${root_dir}/btf_writer/check_size.py -c ${self_dir}/bin/httpd ${self_dir}/bin_btf/httpd
+
+echo "increase size after compressed"
+tar -zcvf bin_btf/httpd.tar.gz bin_btf/httpd
+python3 ${root_dir}/btf_writer/check_size.py -a ${self_dir}/bin/httpd ${self_dir}/bin_btf/httpd.tar.gz
