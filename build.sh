@@ -1,0 +1,1 @@
+docker build -t btftest:v1 .

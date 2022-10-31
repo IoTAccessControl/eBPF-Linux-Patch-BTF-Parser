@@ -9,7 +9,7 @@ build_openssl() {
 	fi
 	cd openssl-3.0.5
 	./config -d --prefix=/usr/local/openssl
-	make
+	make && make install
 }
 
 pushd ${self_dir}
