@@ -11,7 +11,7 @@ build_memcached() {
     # install libevent
     cd libevent-2.1.12-stable
     ./configure --prefix=/usr/local/libevent
-    make && make install
+    make && sudo make install
     # install memcached
     cd ../memcached-1.6.17
     ./configure --prefix=/usr/local/memcached --with-libevent=/usr/local/libevent

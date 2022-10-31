@@ -2,7 +2,7 @@
 1. 安装依赖  
 ```
 sudo apt install git vim clang cmake build-essential g++ git zlib1g-dev llvm python3 python3-pip iproute2 libelf-dev \
-	 libdw-dev libpcre3-dev
+	 libdw-dev libpcre3-dev libexpat1-dev 
 ```
 
 2. build  
