@@ -12,11 +12,11 @@ build_apache() {
     # install apr
 	cd apr-1.7.0
     ./configure --prefix=/usr/local/apr
-    make && sudo make install
+    make && make install
     #install apr-util
     cd ../apr-util-1.6.1
     ./configure --prefix=/usr/local/apr-util --with-apr=/usr/local/apr
-    make && sudo make install
+    make && make install
     #install httpd
     cd ../httpd-2.4.54
     ./configure --prefix=/usr/local/apache --with-apr=/usr/local/apr --with-apr-util=/usr/local/apr-util/

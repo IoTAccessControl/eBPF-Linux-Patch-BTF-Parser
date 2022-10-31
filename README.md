@@ -20,12 +20,14 @@ bpftool -j btf dump file test_prog/01-simple_test/bin/simple
 
 
 #### 验证BTF大小  
-1. 
-``` bash
-via tar
-bin_btf/libtest.so.btf
-        increase: 14032 + 255 (13.7kb + 0.25kb 1.8%)
-via zip
-  adding: bin_btf/libtest.so.btf (deflated 49%)
-        increase: 14032 + 314 (13.7kb + 0.31kb 2.2%)
+[测试步骤：](test_prog/README.md)
+```
+# 依次执行以下命令，可查看不同项目的压缩比例
+bash test_prog/01-simple_test/1-gen_btf.sh
+bash test_prog/01-simple_test/2-parse_btf.sh 
+bash test_prog/02-openssl_test/1-gen_btf.sh
+bash test_prog/03-nginx_test/1-gen_btf.sh
+bash test_prog/03-nginx_test/2-parse_btf.sh
+bash test_prog/04-apache_test/1-gen_btf.sh
+bash test_prog/05-memcached_test/1-gen_btf.sh
 ```
