@@ -8,7 +8,7 @@ build_openssl() {
 		wget http://www.openssl.org/source/openssl-3.0.5.tar.gz -O - | tar xz
 	fi
 	cd openssl-3.0.5
-	./config -d --prefix=/usr/local/openssl
+	./config -d
 	make && make install
 }
 

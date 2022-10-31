@@ -8,7 +8,7 @@ build_nginx() {
 		curl http://nginx.org/download/nginx-1.22.1.tar.gz | tar zxvf -
 	fi
 	cd nginx-1.22.1
-	./configure --with-http_ssl_module --with-ld-opt="-L/usr/local/openssl"
+	./configure --with-http_ssl_module
 	make CFLAGS="-g -O0"
 	cp objs/nginx ../bin/nginx
 }
