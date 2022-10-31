@@ -7,7 +7,7 @@ ARG DEBIAN_FRONTEND="noninteractive"
 RUN apt-get update && \
 	apt-get install --no-install-recommends -y git vim clang cmake build-essential \
 		g++ git zlib1g-dev llvm python3 python3-pip iproute2 libelf-dev \
-		libdw-dev libpcre3-dev curl wget
+		libdw-dev libpcre3-dev curl wget zip 
 
 WORKDIR /work/eBPF-Linux-Patch-BTF-Parser
 ADD . /work/eBPF-Linux-Patch-BTF-Parser 
