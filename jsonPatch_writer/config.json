@@ -1,0 +1,11 @@
+{
+	"name": "template",
+	"version": "0.0.1",
+	"pid": 0,
+	"export_data_types": "",
+	"address_vulFunc": "0x0",
+	"address_patchHandler": "0x0",
+	"ebpf_patch": "",
+	"ebpf_patch_len": 0,
+	"description": "This is a template for a ebpf patch."
+}
