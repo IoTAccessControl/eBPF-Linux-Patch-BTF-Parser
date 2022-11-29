@@ -119,6 +119,11 @@ def get_struct_memory_layout(f):
                 break
             # print("LLVMType: ", find.group(1))
             LLVMType = find.group(1).split(', ')
+            # TODO只是一个针对特殊情况的解决方案，不具有通用性，需要修改;获取两侧index?
+            for index, item in enumerate(LLVMType):
+                if "(" in item and ")" not in item:
+                    LLVMType[index] = LLVMType[index] + ", " + LLVMType[index + 1]
+                    del(LLVMType[index + 1])
             json_data['LLVMType'] = LLVMType
         elif line.startswith("*** Dumping AST Record Layout"):
             break
@@ -182,7 +187,8 @@ def fix_use_of_export_data(src):
     with open(output_event_c_path, "w") as f:
         finds = re.findall("(struct\s+(\w+))", event_header_content)
         # print(finds)
-        for find in finds:
+        tmp = sorted(set(finds), key=finds.index)
+        for find in tmp:
             c_generate_prefix = c_generate_prefix + find[0] + "* " + find[1] + " = NULL;"
         f.write(c_generate_prefix)
 

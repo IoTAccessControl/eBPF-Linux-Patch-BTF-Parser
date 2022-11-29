@@ -5,17 +5,17 @@ commit link: https://github.com/openssl/openssl/commit/1421e0c584ae9120ca1b88098
 */
 
 #include <stdio.h>
+#include <stdint.h>
 #include "02-cve.bpf.h"
 
-int dummy_cve_2015_0205_ssl3_get_cert_verify(void *mem) {
-    stack_frame *frame = (stack_frame *)mem;
-    //int type = 1;
-    int *peer;//, value = 11;
-    peer = frame->a1;
+int eBPF_Patch(stack_frame *ctx)
+{
+	int *peer; //, value = 11;
+	peer = (int *)REGS_PARM1(ctx);
 
-    //if ((peer != NULL) && (type & EVP_PKT_SIGN))
-    if (peer != NULL) //patch
-        return 1;
+	// patch
+	if (peer != NULL)
+		return 1;
 
-    return 0;
+	return 0;
 }

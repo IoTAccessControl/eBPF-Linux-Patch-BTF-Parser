@@ -8,12 +8,10 @@
 #include "cJSON.h"
 #include "ubpf_int.h"
 
-#define EVP_PKT_SIGN 0x0010
-
 typedef struct Stack_frame
 {
 	int a1;
-	// int a2;
+	int a2;
 } __attribute__((__packed__, aligned(4))) stack_frame;
 
 static void register_functions(struct ubpf_vm *vm);
@@ -23,16 +21,33 @@ void getEbpfPatch(const char *patchName);
 static int8_t *bytecode;
 uint64_t bytecode_len;
 
-int orig_c0(int *s)
+typedef struct H264Picture
 {
-	int type = 1;
-	int *peer; //, value = 11;
-	peer = s;
+	int needs_realloc;
+} H264Picture;
 
-	if ((peer != NULL) && (type & EVP_PKT_SIGN))
-		return 1;
+typedef struct H264Context
+{
+	H264Picture *DPB;
+	H264Picture *delayed_pic[18];
+} H264Context;
 
-	return 0;
+void orig_c0(H264Context *h, int free_rbsp)
+{
+	// int i;
+	if (free_rbsp && h->DPB)
+	{
+		/*for (i = 0; i < 36; i++)
+			printf("1");*/
+		// patch
+		// memset(h->delayed_pic, 0, sizeof(h->delayed_pic));
+		h->DPB[0].needs_realloc = -1;
+	}
+	else if (h->DPB)
+	{
+		// for (i = 0; i < 36; i++)
+		// 	h->DPB[i].needs_realloc = 1;
+	}
 }
 
 int run_ebpf(stack_frame *frame, const char *code, unsigned long code_len)
@@ -74,14 +89,15 @@ int run_ebpf(stack_frame *frame, const char *code, unsigned long code_len)
 
 __attribute__((naked)) void patch_handler()
 {
+	// TODO 能不能在这里将sp传递到frame中呢？？？怎么生成一个全面（能够对其成员进行赋值，不存在的就置空？）的frame？
 	__asm__ __volatile__(
 		"push %rbp \n\t"
 
 		// save arguments to stack
-		"sub $0x8,%rsp \n\t"
+		"sub $0x10,%rsp \n\t"
 		"mov %rsp,%rbp \n\t"
 		"mov %rdi,0x00(%rbp) \n\t"
-		//"mov %rsi,0x08(%rbp) \n\t"
+		"mov %rsi,0x08(%rbp) \n\t"
 		//"mov %rdx,0x10(%rbp) \n\t"
 		//"mov %rcx,0x18(%rbp) \n\t"
 		//"mov %r8,0x20(%rbp) \n\t"
@@ -91,7 +107,7 @@ __attribute__((naked)) void patch_handler()
 		"mov %rbp, %rdi \n\t" // arg1 = sp
 		"callq patch_dispatcher \n\t"
 
-		// restore context
+		// // restore context
 		// "mov 0x00(%rbp), %rbx \n\t"
 		// "mov 0x08(%rbp), %r12 \n\t"
 		// "mov 0x10(%rbp), %r13 \n\t"
@@ -100,7 +116,7 @@ __attribute__((naked)) void patch_handler()
 		// "mov 0x28(%rbp), %rbp \n\t"
 
 		"mov %rbp, %rsp \n\t"
-		"add $0x8,%rsp \n\t" // 16 byte aligned
+		"add $0x10,%rsp \n\t" // 16 byte aligned
 		"pop %rbp \n\t"
 		"retq \n\t");
 }
@@ -205,8 +221,6 @@ void getEbpfPatch(const char *patchName)
 
 	cjson_ebpf_patch = cJSON_GetObjectItem(cjson_data, "ebpf_patch");
 	cjson_ebpf_patch_len = cJSON_GetObjectItem(cjson_data, "ebpf_patch_len");
-	// printf("cjson_ebpf_patch: %s\n", cjson_ebpf_patch->valuestring);
-	// printf("cjson_ebpf_patch_len:%d\n", cjson_ebpf_patch_len->valueint);
 
 	bytecode_len = cjson_ebpf_patch_len->valueint;
 	bytecode = (int8_t *)malloc(bytecode_len);
@@ -228,11 +242,23 @@ int main(int argc, char **argv)
 	getEbpfPatch(strcat(argv[0], ".patch.json"));
 	hook2(orig_c0, patch_handler);
 
-	if (orig_c0((int *)11) == 1)
+	int free_rbsp = 1;
+	H264Context *h;
+	H264Picture *dpb;
+	dpb = (H264Picture *)malloc(sizeof(H264Picture));
+	dpb->needs_realloc = 1;
+	h = (H264Context *)malloc(sizeof(H264Context));
+	h->DPB = dpb;
+	h->delayed_pic[0] = dpb;
+	h->delayed_pic[1] = dpb;
+
+	orig_c0(h, free_rbsp);
+
+	if (h->delayed_pic[0] == (H264Picture *)0)
 	{
 		printf("This is New Function\n");
 	}
-	else if (orig_c0((int *)11) == 0)
+	else if (h->DPB[0].needs_realloc == -1)
 	{
 		printf("This is Old Function\n");
 	}
@@ -242,18 +268,16 @@ int main(int argc, char **argv)
 	}
 
 	/* THIS IS FOR PTRACE HOOK */
-	// int result = 0;
 	// int i = 0;
 	// while (1)
 	// {
 	// 	printf("tick: %d\n", i);
 	// 	printf("Demo! [pid:%d]\n", getpid());
-	// 	result = orig_c0((int *)11);
-	// 	if (result == 1)
+	// 	if (h->delayed_pic[0] == (H264Picture *)0)
 	// 	{
 	// 		printf("This is New Function\n");
 	// 	}
-	// 	else if (result == 0)
+	// 	else if (h->DPB[0].needs_realloc == -1)
 	// 	{
 	// 		printf("This is Old Function\n");
 	// 	}

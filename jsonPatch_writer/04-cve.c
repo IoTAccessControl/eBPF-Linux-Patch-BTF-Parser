@@ -8,8 +8,6 @@
 #include "cJSON.h"
 #include "ubpf_int.h"
 
-#define EVP_PKT_SIGN 0x0010
-
 typedef struct Stack_frame
 {
 	int a1;
@@ -23,16 +21,56 @@ void getEbpfPatch(const char *patchName);
 static int8_t *bytecode;
 uint64_t bytecode_len;
 
-int orig_c0(int *s)
+struct lhash_node_st
 {
-	int type = 1;
-	int *peer; //, value = 11;
-	peer = s;
+	void *data;
+	struct lhash_node_st *next;
+	unsigned long hash;
+};
 
-	if ((peer != NULL) && (type & EVP_PKT_SIGN))
-		return 1;
+typedef struct lhash_st OPENSSL_LHASH;
+typedef struct lhash_node_st OPENSSL_LH_NODE;
+typedef int (*OPENSSL_LH_COMPFUNC)(const void *, const void *);
+typedef unsigned long (*OPENSSL_LH_HASHFUNC)(const void *);
 
-	return 0;
+struct lhash_st
+{
+	OPENSSL_LH_NODE **b;
+	OPENSSL_LH_COMPFUNC comp;
+	OPENSSL_LH_HASHFUNC hash;
+	unsigned int num_nodes;
+	unsigned int num_alloc_nodes;
+	unsigned int p;
+	unsigned int pmax;
+	unsigned long up_load;	 /* load times 256 */
+	unsigned long down_load; /* load times 256 */
+	unsigned long num_items;
+	int error;
+};
+
+int orig_c0(OPENSSL_LHASH *lh)
+{
+	unsigned int i;
+	OPENSSL_LH_NODE *n, *nn;
+
+	if (lh == NULL)
+		return 0;
+
+	for (i = 0; i < lh->num_nodes; i++)
+	{
+		n = lh->b[i];
+		while (n != NULL)
+		{
+			nn = n->next;
+			// OPENSSL_free(n);
+			free(n); // ??
+			n = nn;
+		}
+		lh->b[i] = NULL;
+	}
+
+	// lh->num_items = 0;
+	return lh->num_items;
 }
 
 int run_ebpf(stack_frame *frame, const char *code, unsigned long code_len)
@@ -74,6 +112,7 @@ int run_ebpf(stack_frame *frame, const char *code, unsigned long code_len)
 
 __attribute__((naked)) void patch_handler()
 {
+	// TODO 能不能在这里将sp传递到frame中呢？？？怎么生成一个全面（能够对其成员进行赋值，不存在的就置空？）的frame？
 	__asm__ __volatile__(
 		"push %rbp \n\t"
 
@@ -91,7 +130,7 @@ __attribute__((naked)) void patch_handler()
 		"mov %rbp, %rdi \n\t" // arg1 = sp
 		"callq patch_dispatcher \n\t"
 
-		// restore context
+		// // restore context
 		// "mov 0x00(%rbp), %rbx \n\t"
 		// "mov 0x08(%rbp), %r12 \n\t"
 		// "mov 0x10(%rbp), %r13 \n\t"
@@ -100,7 +139,7 @@ __attribute__((naked)) void patch_handler()
 		// "mov 0x28(%rbp), %rbp \n\t"
 
 		"mov %rbp, %rsp \n\t"
-		"add $0x8,%rsp \n\t" // 16 byte aligned
+		"add $0x8,%rsp \n\t"
 		"pop %rbp \n\t"
 		"retq \n\t");
 }
@@ -205,8 +244,6 @@ void getEbpfPatch(const char *patchName)
 
 	cjson_ebpf_patch = cJSON_GetObjectItem(cjson_data, "ebpf_patch");
 	cjson_ebpf_patch_len = cJSON_GetObjectItem(cjson_data, "ebpf_patch_len");
-	// printf("cjson_ebpf_patch: %s\n", cjson_ebpf_patch->valuestring);
-	// printf("cjson_ebpf_patch_len:%d\n", cjson_ebpf_patch_len->valueint);
 
 	bytecode_len = cjson_ebpf_patch_len->valueint;
 	bytecode = (int8_t *)malloc(bytecode_len);
@@ -228,11 +265,16 @@ int main(int argc, char **argv)
 	getEbpfPatch(strcat(argv[0], ".patch.json"));
 	hook2(orig_c0, patch_handler);
 
-	if (orig_c0((int *)11) == 1)
+	OPENSSL_LHASH *lh;
+	lh = (OPENSSL_LHASH *)malloc(sizeof(OPENSSL_LHASH));
+	lh->num_nodes = 0;
+	lh->num_items = 123;
+
+	if (orig_c0(lh) == 0)
 	{
 		printf("This is New Function\n");
 	}
-	else if (orig_c0((int *)11) == 0)
+	else if (orig_c0(lh) == 123)
 	{
 		printf("This is Old Function\n");
 	}
@@ -248,12 +290,12 @@ int main(int argc, char **argv)
 	// {
 	// 	printf("tick: %d\n", i);
 	// 	printf("Demo! [pid:%d]\n", getpid());
-	// 	result = orig_c0((int *)11);
-	// 	if (result == 1)
+	// 	result = orig_c0(lh);
+	// 	if (result == 0)
 	// 	{
 	// 		printf("This is New Function\n");
 	// 	}
-	// 	else if (result == 0)
+	// 	else if (result == 123)
 	// 	{
 	// 		printf("This is Old Function\n");
 	// 	}

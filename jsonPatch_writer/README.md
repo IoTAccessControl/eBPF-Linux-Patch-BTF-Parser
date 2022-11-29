@@ -23,10 +23,15 @@
 2. 使用方法
 
 运行步骤：
+- 单个测试
 ```shell
-make all
+make 01-cve
 python3 gen_patch.py -e 01-cve -f orig_c0 -s 01-cve.bpf.c -o 01-cve.patch.json
 ./01-cve
+```
+- 整体测试
+```shell
+make test
 ```
 
 补丁示例：

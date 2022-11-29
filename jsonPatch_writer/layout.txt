@@ -3,85 +3,65 @@
 Type: struct Stack_frame
 
 Layout: <ASTRecordLayout
-  Size:128
-  DataSize:128
+  Size:320
+  DataSize:320
   Alignment:32
-  FieldOffsets: [0, 64]>
+  FieldOffsets: [0, 64, 128, 192, 256]>
 
 *** Dumping IRgen Record Layout
-Record: RecordDecl 0xd4e408 <./03-cve.bpf.h:4:9, line:8:1> line:4:16 struct Stack_frame definition
-|-PackedAttr 0xd4e5b0 <line:8:19>
-|-AlignedAttr 0xd4e628 <col:31, col:40> aligned
-| `-ConstantExpr 0xd4e608 <col:39> 'int'
+Record: RecordDecl 0x2253410 <./05-cve.bpf.h:13:9, line:22:1> line:13:16 struct Stack_frame definition
+|-PackedAttr 0x22536d8 <line:22:18>
+|-AlignedAttr 0x2253750 <col:30, col:39> aligned
+| `-ConstantExpr 0x2253730 <col:38> 'int'
 |   |-value: Int 4
-|   `-IntegerLiteral 0xd4e590 <col:39> 'int' 4
-|-FieldDecl 0xd4e4e0 <line:5:2, col:11> col:11 a1 'uint64_t':'unsigned long'
-`-FieldDecl 0xd4e540 <line:6:2, col:11> col:11 a2 'uint64_t':'unsigned long'
+|   `-IntegerLiteral 0x22536b8 <col:38> 'int' 4
+|-FieldDecl 0x22534c8 <line:15:2, col:16> col:16 di 'unsigned long'
+|-FieldDecl 0x2253530 <line:16:2, col:16> col:16 si 'unsigned long'
+|-FieldDecl 0x2253598 <line:17:2, col:16> col:16 dx 'unsigned long'
+|-FieldDecl 0x2253600 <line:18:2, col:16> col:16 cx 'unsigned long'
+`-FieldDecl 0x2253668 <line:19:2, col:16> col:16 r8 'unsigned long'
 
 Layout: <CGRecordLayout
-  LLVMType:%struct.Stack_frame = type { i64, i64 }
+  LLVMType:%struct.Stack_frame = type { i64, i64, i64, i64, i64 }
   IsZeroInitializable:1
   BitFields:[
 ]>
 
 *** Dumping AST Record Layout
-Type: struct Apr_time_exp_t
+Type: struct h264Picture
 
 Layout: <ASTRecordLayout
-  Size:352
-  DataSize:352
+  Size:32
+  DataSize:32
   Alignment:32
-  FieldOffsets: [0, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320]>
+  FieldOffsets: [0]>
 
 *** Dumping IRgen Record Layout
-Record: RecordDecl 0xd4e728 <./03-cve.bpf.h:10:9, line:33:1> line:10:16 struct Apr_time_exp_t definition
-|-FieldDecl 0xd4e810 <line:12:5, col:9> col:9 tm_usec 'int'
-| `-FullComment 0xd5fb80 <line:11:8, col:33>
-|   `-ParagraphComment 0xd5fb50 <col:8, col:33>
-|     `-TextComment 0xd5fb20 <col:8, col:33> Text=" microseconds past tm_sec "
-|-FieldDecl 0xd4e8a0 <line:14:5, col:9> col:9 tm_sec 'int'
-| `-FullComment 0xd5fc50 <line:13:8, col:35>
-|   `-ParagraphComment 0xd5fc20 <col:8, col:35>
-|     `-TextComment 0xd5fbf0 <col:8, col:35> Text=" (0-61) seconds past tm_min "
-|-FieldDecl 0xd4e930 <line:16:5, col:9> col:9 tm_min 'int'
-| `-FullComment 0xd5fd20 <line:15:8, col:36>
-|   `-ParagraphComment 0xd5fcf0 <col:8, col:36>
-|     `-TextComment 0xd5fcc0 <col:8, col:36> Text=" (0-59) minutes past tm_hour "
-|-FieldDecl 0xd4e9c0 <line:18:5, col:9> col:9 tm_hour 'int'
-| `-FullComment 0xd5fdf0 <line:17:8, col:35>
-|   `-ParagraphComment 0xd5fdc0 <col:8, col:35>
-|     `-TextComment 0xd5fd90 <col:8, col:35> Text=" (0-23) hours past midnight "
-|-FieldDecl 0xd4ea50 <line:20:5, col:9> col:9 tm_mday 'int'
-| `-FullComment 0xd5fec0 <line:19:8, col:32>
-|   `-ParagraphComment 0xd5fe90 <col:8, col:32>
-|     `-TextComment 0xd5fe60 <col:8, col:32> Text=" (1-31) day of the month "
-|-FieldDecl 0xd4eae0 <line:22:5, col:9> col:9 tm_mon 'int'
-| `-FullComment 0xd5ff90 <line:21:8, col:33>
-|   `-ParagraphComment 0xd5ff60 <col:8, col:33>
-|     `-TextComment 0xd5ff30 <col:8, col:33> Text=" (0-11) month of the year "
-|-FieldDecl 0xd4eb70 <line:24:5, col:9> col:9 tm_year 'int'
-| `-FullComment 0xd60060 <line:23:8, col:24>
-|   `-ParagraphComment 0xd60030 <col:8, col:24>
-|     `-TextComment 0xd60000 <col:8, col:24> Text=" year since 1900 "
-|-FieldDecl 0xd4ec00 <line:26:5, col:9> col:9 tm_wday 'int'
-| `-FullComment 0xd60130 <line:25:8, col:32>
-|   `-ParagraphComment 0xd60100 <col:8, col:32>
-|     `-TextComment 0xd600d0 <col:8, col:32> Text=" (0-6) days since Sunday "
-|-FieldDecl 0xd4ec90 <line:28:5, col:9> col:9 tm_yday 'int'
-| `-FullComment 0xd60200 <line:27:8, col:37>
-|   `-ParagraphComment 0xd601d0 <col:8, col:37>
-|     `-TextComment 0xd601a0 <col:8, col:37> Text=" (0-365) days since January 1 "
-|-FieldDecl 0xd4ed20 <line:30:5, col:9> col:9 tm_isdst 'int'
-| `-FullComment 0xd602d0 <line:29:8, col:29>
-|   `-ParagraphComment 0xd602a0 <col:8, col:29>
-|     `-TextComment 0xd60270 <col:8, col:29> Text=" daylight saving time "
-`-FieldDecl 0xd4edb0 <line:32:5, col:9> col:9 tm_gmtoff 'int'
-  `-FullComment 0xd603a0 <line:31:8, col:28>
-    `-ParagraphComment 0xd60370 <col:8, col:28>
-      `-TextComment 0xd60340 <col:8, col:28> Text=" seconds east of UTC "
+Record: RecordDecl 0x2253848 <./05-cve.bpf.h:25:9, line:28:1> line:25:16 struct h264Picture definition
+`-FieldDecl 0x2253908 <line:27:2, col:6> col:6 needs_realloc 'int'
 
 Layout: <CGRecordLayout
-  LLVMType:%struct.Apr_time_exp_t = type { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 }
+  LLVMType:%struct.h264Picture = type { i32 }
+  IsZeroInitializable:1
+  BitFields:[
+]>
+
+*** Dumping AST Record Layout
+Type: struct h264Context
+
+Layout: <ASTRecordLayout
+  Size:1216
+  DataSize:1216
+  Alignment:64
+  FieldOffsets: [0, 64]>
+
+*** Dumping IRgen Record Layout
+Record: RecordDecl 0x225ed00 <./05-cve.bpf.h:30:9, line:34:1> line:30:16 struct h264Context definition
+|-FieldDecl 0x225ee28 <line:32:2, col:15> col:15 DPB 'H264Picture *'
+`-FieldDecl 0x225ef58 <line:33:2, col:29> col:15 delayed_pic 'H264Picture *[18]'
+
+Layout: <CGRecordLayout
+  LLVMType:%struct.h264Context = type { %struct.h264Picture*, [18 x %struct.h264Picture*] }
   IsZeroInitializable:1
   BitFields:[
 ]>

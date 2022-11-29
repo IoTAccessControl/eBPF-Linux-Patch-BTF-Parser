@@ -21,28 +21,28 @@ typedef struct Stack_frame
 	// unsigned long sp;
 } __attribute__((__packed__, aligned(4))) stack_frame;
 
-typedef struct Apr_time_exp_t
+// cve-related
+typedef struct lhash_node_st
 {
-	/** microseconds past tm_sec */
-	int tm_usec;
-	/** (0-61) seconds past tm_min */
-	int tm_sec;
-	/** (0-59) minutes past tm_hour */
-	int tm_min;
-	/** (0-23) hours past midnight */
-	int tm_hour;
-	/** (1-31) day of the month */
-	int tm_mday;
-	/** (0-11) month of the year */
-	int tm_mon;
-	/** year since 1900 */
-	int tm_year;
-	/** (0-6) days since Sunday */
-	int tm_wday;
-	/** (0-365) days since January 1 */
-	int tm_yday;
-	/** daylight saving time */
-	int tm_isdst;
-	/** seconds east of UTC */
-	int tm_gmtoff;
-} apr_time_exp_t;
+	void *data;
+	struct lhash_node_st *next;
+	unsigned long hash;
+} OPENSSL_LH_NODE;
+
+typedef int (*OPENSSL_LH_COMPFUNC)(const void *, const void *);
+typedef unsigned long (*OPENSSL_LH_HASHFUNC)(const void *);
+
+typedef struct lhash_st
+{
+	OPENSSL_LH_NODE **b;
+	OPENSSL_LH_COMPFUNC comp;
+	OPENSSL_LH_HASHFUNC hash;
+	unsigned int num_nodes;
+	unsigned int num_alloc_nodes;
+	unsigned int p;
+	unsigned int pmax;
+	unsigned long up_load;	 /* load times 256 */
+	unsigned long down_load; /* load times 256 */
+	unsigned long num_items;
+	int error;
+} OPENSSL_LHASH;

@@ -20,3 +20,15 @@ typedef struct Stack_frame
 	// unsigned long r9;
 	// unsigned long sp;
 } __attribute__((__packed__, aligned(4))) stack_frame;
+
+// cve-related
+typedef struct h264Picture
+{
+	int needs_realloc;
+} H264Picture;
+
+typedef struct h264Context
+{
+	H264Picture *DPB;
+	H264Picture *delayed_pic[18];
+} H264Context;
