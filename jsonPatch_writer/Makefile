@@ -6,6 +6,8 @@ CFLAGS := -g -Wall -Wno-unused-function
 PYTHON := python3
 LIBBPF_OBJ := libubpf.a
 
+BIN_DIR = bin
+
 APP1=01-cve
 APP2=02-cve
 APP3=03-cve
@@ -25,7 +27,7 @@ else
 endif
 
 .PHONY: all
-all: $(APP1) $(APP2) $(APP3) $(APP4) $(APP5)
+all: $(BIN_DIR)/$(APP1) $(BIN_DIR)/$(APP2) $(BIN_DIR)/$(APP3) $(BIN_DIR)/$(APP4) $(BIN_DIR)/$(APP5)
 
 cJSON.o: cJSON.c
 	$(call msg,CC,$@)
@@ -51,40 +53,44 @@ cJSON.o: cJSON.c
 	$(call msg,CC,$@)
 	$(Q)$(CC) $(CFLAGS) -c $^ -o $@
 
-$(APP1): cJSON.o 01-cve.o $(LIBBPF_OBJ)
+$(BIN_DIR)/$(APP1): cJSON.o 01-cve.o $(LIBBPF_OBJ) | $(BIN_DIR)
 	$(call msg,BINARY,$@)
 	$(Q)$(CC) $(CFLAGS) $^ -lm -o $@
 
-$(APP2): cJSON.o 02-cve.o $(LIBBPF_OBJ)
+$(BIN_DIR)/$(APP2): cJSON.o 02-cve.o $(LIBBPF_OBJ)
 	$(call msg,BINARY,$@)
 	$(Q)$(CC) $(CFLAGS) $^ -lm -o $@
 
-$(APP3): cJSON.o 03-cve.o $(LIBBPF_OBJ)
+$(BIN_DIR)/$(APP3): cJSON.o 03-cve.o $(LIBBPF_OBJ)
 	$(call msg,BINARY,$@)
 	$(Q)$(CC) $(CFLAGS) $^ -lm -o $@
 
-$(APP4): cJSON.o 04-cve.o $(LIBBPF_OBJ)
+$(BIN_DIR)/$(APP4): cJSON.o 04-cve.o $(LIBBPF_OBJ)
 	$(call msg,BINARY,$@)
 	$(Q)$(CC) $(CFLAGS) $^ -lm -o $@
 
-$(APP5): cJSON.o 05-cve.o $(LIBBPF_OBJ)
+$(BIN_DIR)/$(APP5): cJSON.o 05-cve.o $(LIBBPF_OBJ)
 	$(call msg,BINARY,$@)
 	$(Q)$(CC) $(CFLAGS) $^ -lm -o $@
+
+$(BIN_DIR):
+	mkdir $@
 
 .PHONY: test
 test:
 	$(call msg,TEST_ALL)
 	$(Q)make all
-	$(Q)$(PYTHON) gen_patch.py -e 01-cve -f orig_c0 -s 01-cve.bpf.c -o 01-cve.patch.json
-	$(Q)$(PYTHON) gen_patch.py -e 02-cve -f orig_c0 -s 02-cve.bpf.c -o 02-cve.patch.json
-	$(Q)$(PYTHON) gen_patch.py -e 03-cve -f orig_c0 -s 03-cve.bpf.c -o 03-cve.patch.json
-	$(Q)$(PYTHON) gen_patch.py -e 04-cve -f orig_c0 -s 04-cve.bpf.c -o 04-cve.patch.json
-	$(Q)$(PYTHON) gen_patch.py -e 05-cve -f orig_c0 -s 05-cve.bpf.c -o 05-cve.patch.json
-	$(Q)./01-cve
-	$(Q)./02-cve
-	$(Q)./03-cve
-	$(Q)./04-cve
-	$(Q)./05-cve
+	$(Q)rm *.o
+	$(Q)$(PYTHON) gen_patch.py -e $(BIN_DIR)/01-cve -f orig_c0 -s 01-cve.bpf.c -o $(BIN_DIR)/01-cve.patch.json
+	$(Q)$(PYTHON) gen_patch.py -e $(BIN_DIR)/02-cve -f orig_c0 -s 02-cve.bpf.c -o $(BIN_DIR)/02-cve.patch.json
+	$(Q)$(PYTHON) gen_patch.py -e $(BIN_DIR)/03-cve -f orig_c0 -s 03-cve.bpf.c -o $(BIN_DIR)/03-cve.patch.json
+	$(Q)$(PYTHON) gen_patch.py -e $(BIN_DIR)/04-cve -f orig_c0 -s 04-cve.bpf.c -o $(BIN_DIR)/04-cve.patch.json
+	$(Q)$(PYTHON) gen_patch.py -e $(BIN_DIR)/05-cve -f orig_c0 -s 05-cve.bpf.c -o $(BIN_DIR)/05-cve.patch.json
+	$(Q)$(BIN_DIR)/01-cve
+	$(Q)$(BIN_DIR)/02-cve
+	$(Q)$(BIN_DIR)/03-cve
+	$(Q)$(BIN_DIR)/04-cve
+	$(Q)$(BIN_DIR)/05-cve
 
 .PHONY: compile
 compile:
@@ -94,5 +100,5 @@ compile:
 
 .PHONY: clean
 clean:
-	$(call msg,CLEAN, "0x-cve","*.patch.json")
-	$(Q)rm -rf $(APP1) $(APP2) $(APP3) $(APP4) $(APP5) *.o *.patch.json
+	$(call msg,CLEAN, "0x-cve","patch.json")
+	$(Q)rm -rf $(BIN_DIR)/*.patch.json $(BIN_DIR)/*-cve *.o

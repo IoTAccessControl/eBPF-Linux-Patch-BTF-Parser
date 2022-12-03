@@ -3,26 +3,28 @@
 Type: struct Stack_frame
 
 Layout: <ASTRecordLayout
-  Size:320
-  DataSize:320
+  Size:448
+  DataSize:448
   Alignment:32
-  FieldOffsets: [0, 64, 128, 192, 256]>
+  FieldOffsets: [0, 64, 128, 192, 256, 320, 384]>
 
 *** Dumping IRgen Record Layout
-Record: RecordDecl 0x2253410 <./05-cve.bpf.h:13:9, line:22:1> line:13:16 struct Stack_frame definition
-|-PackedAttr 0x22536d8 <line:22:18>
-|-AlignedAttr 0x2253750 <col:30, col:39> aligned
-| `-ConstantExpr 0x2253730 <col:38> 'int'
+Record: RecordDecl 0x1913b28 <./05-cve.bpf.h:31:9, line:40:1> line:31:16 struct Stack_frame definition
+|-PackedAttr 0x1913ec8 <line:40:18>
+|-AlignedAttr 0x1913f40 <col:30, col:39> aligned
+| `-ConstantExpr 0x1913f20 <col:38> 'int'
 |   |-value: Int 4
-|   `-IntegerLiteral 0x22536b8 <col:38> 'int' 4
-|-FieldDecl 0x22534c8 <line:15:2, col:16> col:16 di 'unsigned long'
-|-FieldDecl 0x2253530 <line:16:2, col:16> col:16 si 'unsigned long'
-|-FieldDecl 0x2253598 <line:17:2, col:16> col:16 dx 'unsigned long'
-|-FieldDecl 0x2253600 <line:18:2, col:16> col:16 cx 'unsigned long'
-`-FieldDecl 0x2253668 <line:19:2, col:16> col:16 r8 'unsigned long'
+|   `-IntegerLiteral 0x1913ea8 <col:38> 'int' 4
+|-FieldDecl 0x1913be8 <line:33:2, col:16> col:16 di 'unsigned long'
+|-FieldDecl 0x1913c50 <line:34:2, col:16> col:16 si 'unsigned long'
+|-FieldDecl 0x1913cb8 <line:35:2, col:16> col:16 dx 'unsigned long'
+|-FieldDecl 0x1913d20 <line:36:2, col:16> col:16 cx 'unsigned long'
+|-FieldDecl 0x1913d88 <line:37:2, col:16> col:16 r8 'unsigned long'
+|-FieldDecl 0x1913df0 <line:38:2, col:16> col:16 r9 'unsigned long'
+`-FieldDecl 0x1913e58 <line:39:2, col:16> col:16 sp 'unsigned long'
 
 Layout: <CGRecordLayout
-  LLVMType:%struct.Stack_frame = type { i64, i64, i64, i64, i64 }
+  LLVMType:%struct.Stack_frame = type { i64, i64, i64, i64, i64, i64, i64 }
   IsZeroInitializable:1
   BitFields:[
 ]>
@@ -37,8 +39,8 @@ Layout: <ASTRecordLayout
   FieldOffsets: [0]>
 
 *** Dumping IRgen Record Layout
-Record: RecordDecl 0x2253848 <./05-cve.bpf.h:25:9, line:28:1> line:25:16 struct h264Picture definition
-`-FieldDecl 0x2253908 <line:27:2, col:6> col:6 needs_realloc 'int'
+Record: RecordDecl 0x1914038 <./05-cve.bpf.h:43:9, line:46:1> line:43:16 struct h264Picture definition
+`-FieldDecl 0x19140f8 <line:45:2, col:6> col:6 needs_realloc 'int'
 
 Layout: <CGRecordLayout
   LLVMType:%struct.h264Picture = type { i32 }
@@ -56,9 +58,9 @@ Layout: <ASTRecordLayout
   FieldOffsets: [0, 64]>
 
 *** Dumping IRgen Record Layout
-Record: RecordDecl 0x225ed00 <./05-cve.bpf.h:30:9, line:34:1> line:30:16 struct h264Context definition
-|-FieldDecl 0x225ee28 <line:32:2, col:15> col:15 DPB 'H264Picture *'
-`-FieldDecl 0x225ef58 <line:33:2, col:29> col:15 delayed_pic 'H264Picture *[18]'
+Record: RecordDecl 0x1914218 <./05-cve.bpf.h:48:9, line:52:1> line:48:16 struct h264Context definition
+|-FieldDecl 0x1914348 <line:50:2, col:15> col:15 DPB 'H264Picture *'
+`-FieldDecl 0x1914478 <line:51:2, col:29> col:15 delayed_pic 'H264Picture *[18]'
 
 Layout: <CGRecordLayout
   LLVMType:%struct.h264Context = type { %struct.h264Picture*, [18 x %struct.h264Picture*] }

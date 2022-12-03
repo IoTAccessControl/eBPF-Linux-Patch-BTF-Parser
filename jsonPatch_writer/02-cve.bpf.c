@@ -11,7 +11,7 @@ commit link: https://github.com/openssl/openssl/commit/1421e0c584ae9120ca1b88098
 int eBPF_Patch(stack_frame *ctx)
 {
 	int *peer; //, value = 11;
-	peer = (int *)REGS_PARM1(ctx);
+	peer = (int *)REGS_PARAM(ctx, 1);
 
 	// patch
 	if (peer != NULL)

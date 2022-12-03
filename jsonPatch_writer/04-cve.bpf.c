@@ -9,10 +9,9 @@ commit link: https://github.com/openssl/openssl/commit/64c85430f95200b6b51fe9475
 #include <stdint.h>
 #include "04-cve.bpf.h"
 
-// void dummy_cve_2022-1473_OPENSSL_LH_flush(OPENSSL_LHASH *lh)
 int eBPF_Patch(stack_frame *ctx)
 {
-	OPENSSL_LHASH *lh = (OPENSSL_LHASH *)REGS_PARM1(ctx);
+	OPENSSL_LHASH *lh = (OPENSSL_LHASH *)REGS_PARAM(ctx, 1);
 	unsigned int i;
 	OPENSSL_LH_NODE *n, *nn;
 
