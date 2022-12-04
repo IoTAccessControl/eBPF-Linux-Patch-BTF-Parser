@@ -9,9 +9,10 @@ i.e. change the logic from "v>2000" to "v>3000"
 int eBPF_Patch(stack_frame *ctx)
 {
 	// patch
-	if (REGS_PARAM(ctx, 1) > 3000)
+	test_for_reloc *test = (test_for_reloc *)REGS_PARAM(ctx, 1);
+	if (test->b2 > 3000)
 	{
 		return 1;
 	}
-	return new_sqrt(100);
+	return new_sqrt(0);
 }

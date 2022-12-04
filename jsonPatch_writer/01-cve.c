@@ -21,9 +21,17 @@ static int8_t *bytecode;
 uint64_t bytecode_len;
 int test_global = 2022;
 
-int orig_c0(int v)
+typedef struct Test_For_Reloc
 {
-	if (v > 2000)
+	int a1;
+	// Add field c3
+	int c3;
+	int b2;
+} test_for_reloc;
+
+int orig_c0(test_for_reloc *test)
+{
+	if (test->b2 > 2000)
 	{
 		return 1;
 	}
@@ -213,28 +221,36 @@ int main(int argc, char **argv)
 	getEbpfPatch(strcat(argv[0], ".patch.json"));
 	hook2(orig_c0, patch_handler);
 
-	if (orig_c0(3000) == 10)
+	test_for_reloc *test = (test_for_reloc *)malloc(sizeof(test_for_reloc));
+	test->b2 = 2500;
+	test->c3 = 3500;
+	// 解释: 这里给b2赋值2500,正常应该返回0.
+	// 但是,实际上bpf 补丁中获取到的是c3的值,因此会返回1.
+	if (orig_c0(test) == 0)
 	{
 		printf("This is New Function\n");
 	}
-	else if (orig_c0(3000) == 1)
+	else if (orig_c0(test) == 1)
 	{
 		printf("This is Old Function\n");
 	}
 	else
 	{
-		printf("something wrong.\n");
+		printf("result: %d, something wrong.\n", orig_c0(test));
 	}
 
 	/* THIS IS FOR PTRACE HOOK */
 	// int result = 0;
 	// int i = 0;
+	// test_for_reloc *test = (test_for_reloc *)malloc(sizeof(test_for_reloc));
+	// test->b2 = 3000;
+	// test->c3 = 3000;
 	// while (1)
 	// {
 	// 	printf("tick: %d\n", i);
 	// 	printf("Demo! [pid:%d]\n", getpid());
-	// 	result = orig_c0(3000);
-	// 	if (result == 10)
+	// 	result = orig_c0(test);
+	// 	if (result == 0)
 	// 	{
 	// 		printf("This is New Function\n");
 	// 	}

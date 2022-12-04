@@ -38,3 +38,9 @@ typedef struct Stack_frame
 	unsigned long r9;
 	unsigned long sp;
 } __attribute__((__packed__, aligned(4))) stack_frame;
+
+typedef struct Test_For_Reloc
+{
+	int a1;
+	int b2;
+} test_for_reloc;
