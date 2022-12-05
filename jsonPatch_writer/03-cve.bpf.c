@@ -9,11 +9,10 @@ commit link: https://github.com/apache/apr/commit/da388844b8c48acc5f6e80f2689de6
 #include <stdint.h>
 #include "03-cve.bpf.h"
 
-// int dummy_cve_2017_12613_apr_time_exp_get(long *t, apr_time_exp_t *xt)
 int eBPF_Patch(stack_frame *ctx)
 {
-	long *t = (long *)REGS_PARM1(ctx);
-	apr_time_exp_t *xt = (apr_time_exp_t *)REGS_PARM2(ctx);
+	long *t = (long *)REGS_PARAM(ctx, 1);
+	apr_time_exp_t *xt = (apr_time_exp_t *)REGS_PARAM(ctx, 2);
 
 	// 把long改成了unsigned long，因为不支持有符号除法
 	unsigned long year = xt->tm_year;

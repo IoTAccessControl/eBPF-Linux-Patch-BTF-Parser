@@ -11,7 +11,6 @@
 typedef struct Stack_frame
 {
 	int a1;
-	// int a2;
 } __attribute__((__packed__, aligned(4))) stack_frame;
 
 static void register_functions(struct ubpf_vm *vm);
@@ -69,7 +68,6 @@ int orig_c0(OPENSSL_LHASH *lh)
 		lh->b[i] = NULL;
 	}
 
-	// lh->num_items = 0;
 	return lh->num_items;
 }
 
@@ -92,7 +90,7 @@ int run_ebpf(stack_frame *frame, const char *code, unsigned long code_len)
 	vm->num_insts = code_len / sizeof(vm->insts[0]);
 
 	uint64_t ret;
-	// jit
+	// JIT
 	// char *errmsg;
 	// ubpf_jit_fn fn = ubpf_compile(vm, &errmsg);
 	// if (fn == NULL) {
@@ -116,29 +114,21 @@ __attribute__((naked)) void patch_handler()
 		"push %rbp \n\t"
 
 		// save arguments to stack
-		"sub $0x8,%rsp \n\t"
+		"sub $0x30,%rsp \n\t"
 		"mov %rsp,%rbp \n\t"
 		"mov %rdi,0x00(%rbp) \n\t"
-		//"mov %rsi,0x08(%rbp) \n\t"
-		//"mov %rdx,0x10(%rbp) \n\t"
-		//"mov %rcx,0x18(%rbp) \n\t"
-		//"mov %r8,0x20(%rbp) \n\t"
-		//"mov %r9,0x28(%rbp) \n\t"
+		"mov %rsi,0x08(%rbp) \n\t"
+		"mov %rdx,0x10(%rbp) \n\t"
+		"mov %rcx,0x18(%rbp) \n\t"
+		"mov %r8,0x20(%rbp) \n\t"
+		"mov %r9,0x28(%rbp) \n\t"
 
 		// patch_dispatcher(stack_pointer)
 		"mov %rbp, %rdi \n\t" // arg1 = sp
 		"callq patch_dispatcher \n\t"
 
-		// // restore context
-		// "mov 0x00(%rbp), %rbx \n\t"
-		// "mov 0x08(%rbp), %r12 \n\t"
-		// "mov 0x10(%rbp), %r13 \n\t"
-		// "mov 0x18(%rbp), %r14 \n\t"
-		// "mov 0x20(%rbp), %r15 \n\t"
-		// "mov 0x28(%rbp), %rbp \n\t"
-
 		"mov %rbp, %rsp \n\t"
-		"add $0x8,%rsp \n\t"
+		"add $0x30,%rsp \n\t"
 		"pop %rbp \n\t"
 		"retq \n\t");
 }
@@ -190,10 +180,9 @@ static void register_functions(struct ubpf_vm *vm)
 	ubpf_register(vm, 1, "new_sqrt", new_sqrt);
 	ubpf_register(vm, 2, "strcmp_ext", strcmp);
 	ubpf_register(vm, 3, "unwind", unwind);
-	// ubpf_set_unwind_function_index(vm, 5);
 }
 
-// for hook
+// For hook
 struct jmp
 {
 	uint32_t opcode : 8;

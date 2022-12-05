@@ -1,4 +1,6 @@
+// 定义参数获取宏
 #define REGS_SP(x) ((x)->sp)
+<<<<<<< HEAD
 #define REGS_PARM1(x) ((x)->di)
 #define REGS_PARM2(x) ((x)->si)
 #define REGS_PARM3(x) ((x)->dx)
@@ -9,6 +11,35 @@
 // static uint32_t (*new_sqrt)(uint32_t x) = (void *)1;
 // int (*strcmp_ext)(const char *s1, const char *s2) = (void *)2;
 // static uint64_t (*unwind)(uint64_t i) = (void *)3;
+=======
+#define REGS_PARAM(x, index) \
+({ \
+	unsigned long ret; \
+	switch (index) \
+	{ \
+	case 1: \
+		ret = (x)->di; \
+		break; \
+	case 2: \
+		ret = (x)->si; \
+		break; \
+	case 3: \
+		ret = (x)->dx; \
+		break; \
+	case 4: \
+		ret = (x)->cx; \
+		break; \
+	case 5: \
+		ret = (x)->r8; \
+		break; \
+	case 6: \
+		ret = (x)->r9; \
+		break; \
+	default: \
+		ret = 0; \
+	} \
+ret; })
+>>>>>>> 17093a2d86a4bf7d6b726bb98521405849ef8689
 
 typedef struct Stack_frame
 {
@@ -17,8 +48,8 @@ typedef struct Stack_frame
 	unsigned long dx;
 	unsigned long cx;
 	unsigned long r8;
-	// unsigned long r9;
-	// unsigned long sp;
+	unsigned long r9;
+	unsigned long sp;
 } __attribute__((__packed__, aligned(4))) stack_frame;
 
 // cve-related

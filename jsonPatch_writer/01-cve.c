@@ -11,7 +11,6 @@
 typedef struct Stack_frame
 {
 	int a1;
-	// int a2;
 } __attribute__((__packed__, aligned(4))) stack_frame;
 
 static void register_functions(struct ubpf_vm *vm);
@@ -22,9 +21,17 @@ static int8_t *bytecode;
 uint64_t bytecode_len;
 int test_global = 2022;
 
-int orig_c0(int v)
+typedef struct Test_For_Reloc
 {
-	if (v > 2000)
+	int a1;
+	// Add field c3
+	int c3;
+	int b2;
+} test_for_reloc;
+
+int orig_c0(test_for_reloc *test)
+{
+	if (test->b2 > 2000)
 	{
 		return 1;
 	}
@@ -50,7 +57,7 @@ int run_ebpf(stack_frame *frame, const char *code, unsigned long code_len)
 	vm->num_insts = code_len / sizeof(vm->insts[0]);
 
 	uint64_t ret;
-	// jit
+	// JIT
 	// char *errmsg;
 	// ubpf_jit_fn fn = ubpf_compile(vm, &errmsg);
 	// if (fn == NULL) {
@@ -70,34 +77,25 @@ int run_ebpf(stack_frame *frame, const char *code, unsigned long code_len)
 
 __attribute__((naked)) void patch_handler()
 {
-	// TODO: 能不能在这里将sp传递到frame中呢？？？怎么生成一个全面（能够对其成员进行赋值，不存在的就置空？）的frame？
 	__asm__ __volatile__(
 		"push %rbp \n\t"
 
 		// save arguments to stack
-		"sub $0x8,%rsp \n\t"
+		"sub $0x30,%rsp \n\t"
 		"mov %rsp,%rbp \n\t"
 		"mov %rdi,0x00(%rbp) \n\t"
-		//"mov %rsi,0x08(%rbp) \n\t"
-		//"mov %rdx,0x10(%rbp) \n\t"
-		//"mov %rcx,0x18(%rbp) \n\t"
-		//"mov %r8,0x20(%rbp) \n\t"
-		//"mov %r9,0x28(%rbp) \n\t"
+		"mov %rsi,0x08(%rbp) \n\t"
+		"mov %rdx,0x10(%rbp) \n\t"
+		"mov %rcx,0x18(%rbp) \n\t"
+		"mov %r8,0x20(%rbp) \n\t"
+		"mov %r9,0x28(%rbp) \n\t"
 
 		// patch_dispatcher(stack_pointer)
 		"mov %rbp, %rdi \n\t" // arg1 = sp
 		"callq patch_dispatcher \n\t"
 
-		// // restore context
-		// "mov 0x00(%rbp), %rbx \n\t"
-		// "mov 0x08(%rbp), %r12 \n\t"
-		// "mov 0x10(%rbp), %r13 \n\t"
-		// "mov 0x18(%rbp), %r14 \n\t"
-		// "mov 0x20(%rbp), %r15 \n\t"
-		// "mov 0x28(%rbp), %rbp \n\t"
-
 		"mov %rbp, %rsp \n\t"
-		"add $0x8,%rsp \n\t" // 16 byte aligned
+		"add $0x30,%rsp \n\t"
 		"pop %rbp \n\t"
 		"retq \n\t");
 }
@@ -149,10 +147,9 @@ static void register_functions(struct ubpf_vm *vm)
 	ubpf_register(vm, 1, "new_sqrt", new_sqrt);
 	ubpf_register(vm, 2, "strcmp_ext", strcmp);
 	ubpf_register(vm, 3, "unwind", unwind);
-	// ubpf_set_unwind_function_index(vm, 5);
 }
 
-// for hook
+// For hook
 struct jmp
 {
 	uint32_t opcode : 8;
@@ -224,28 +221,36 @@ int main(int argc, char **argv)
 	getEbpfPatch(strcat(argv[0], ".patch.json"));
 	hook2(orig_c0, patch_handler);
 
-	if (orig_c0(3000) == 10)
+	test_for_reloc *test = (test_for_reloc *)malloc(sizeof(test_for_reloc));
+	test->b2 = 2500;
+	test->c3 = 3500;
+	// 解释: 这里给b2赋值2500,正常应该返回0.
+	// 但是,实际上bpf 补丁中获取到的是c3的值,因此会返回1.
+	if (orig_c0(test) == 0)
 	{
 		printf("This is New Function\n");
 	}
-	else if (orig_c0(3000) == 1)
+	else if (orig_c0(test) == 1)
 	{
 		printf("This is Old Function\n");
 	}
 	else
 	{
-		printf("something wrong.\n");
+		printf("result: %d, something wrong.\n", orig_c0(test));
 	}
 
 	/* THIS IS FOR PTRACE HOOK */
 	// int result = 0;
 	// int i = 0;
+	// test_for_reloc *test = (test_for_reloc *)malloc(sizeof(test_for_reloc));
+	// test->b2 = 3000;
+	// test->c3 = 3000;
 	// while (1)
 	// {
 	// 	printf("tick: %d\n", i);
 	// 	printf("Demo! [pid:%d]\n", getpid());
-	// 	result = orig_c0(3000);
-	// 	if (result == 10)
+	// 	result = orig_c0(test);
+	// 	if (result == 0)
 	// 	{
 	// 		printf("This is New Function\n");
 	// 	}

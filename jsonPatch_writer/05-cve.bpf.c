@@ -10,13 +10,10 @@ commit link: https://github.com/FFmpeg/FFmpeg/commit/e8714f6f93d1a32f4e465520996
 #include <string.h>
 #include "05-cve.bpf.h"
 
-// void dummy_cve_2015_3417_ff_h264_free_tables(H264Context *h, int free_rbsp) {
 void dummy_cve_2015_3417_ff_h264_free_tables(stack_frame *ctx)
 {
-	// stack_frame *frame = (stack_frame *)mem;
-
-	H264Context *h = (H264Context *)REGS_PARM1(ctx);
-	int free_rbsp = REGS_PARM2(ctx);
+	H264Context *h = (H264Context *)REGS_PARAM(ctx, 1);
+	int free_rbsp = REGS_PARAM(ctx, 2);
 
 	// int i;
 	if (free_rbsp && h->DPB)
