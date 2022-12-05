@@ -112,7 +112,6 @@ int run_ebpf(stack_frame *frame, const char *code, unsigned long code_len)
 
 __attribute__((naked)) void patch_handler()
 {
-	// TODO 能不能在这里将sp传递到frame中呢？？？怎么生成一个全面（能够对其成员进行赋值，不存在的就置空？）的frame？
 	__asm__ __volatile__(
 		"push %rbp \n\t"
 

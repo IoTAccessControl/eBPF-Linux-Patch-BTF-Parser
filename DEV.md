@@ -7,6 +7,8 @@
 
 ### NOTES 
 1. 搭建开发环境，依赖于git, vim, clang, cmake, build-essential, g++, git, zlib1g-dev, llvm, python3, python3-pip, iproute2, libelf-dev等
+Python依赖：python3-pyelftools
+
 ```bash
 bash scripts/build_all.sh
 ```
@@ -38,3 +40,6 @@ bash btf_writer/gen_btf.sh file_with_debuginfo
 python btf_parser/check.py file_with_debuginfo
 ```
 ![](test_prog/apache_test/apache_4.png)
+
+
+### Patch Notes  

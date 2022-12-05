@@ -4,9 +4,8 @@ cve link: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-1473
 commit link: https://github.com/openssl/openssl/commit/64c85430f95200b6b51fe9475bd5203f7c19daf1
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
+#define NULL 0
+
 #include "04-cve.bpf.h"
 
 // void dummy_cve_2022-1473_OPENSSL_LH_flush(OPENSSL_LHASH *lh)
@@ -26,7 +25,7 @@ int eBPF_Patch(stack_frame *ctx)
 		{
 			nn = n->next;
 			// OPENSSL_free(n);
-			free(n); // ??
+			// free(n); // ??
 			n = nn;
 		}
 		lh->b[i] = NULL;

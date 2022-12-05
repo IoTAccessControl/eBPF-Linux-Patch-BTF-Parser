@@ -90,7 +90,7 @@ test:
 compile:
 	$(call msg,GENERATE_EBPF_PATCH)
 	$(Q)$(CLANG) -cc1 -fdump-record-layouts-simple $(CLANG_BPF_SYS_INCLUDES) -emit-llvm -D__TARGET_ARCH_x86_64 export_data_types.c > layout.txt
-	$(Q)rm export_data_types.c export_data_types.ll
+# $(Q)rm export_data_types.c export_data_types.ll
 
 .PHONY: clean
 clean:

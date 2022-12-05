@@ -18,7 +18,7 @@
 #ifndef UBPF_INT_H
 #define UBPF_INT_H
 
-#include <ubpf.h>
+#include "ubpf.h"
 #include "ebpf.h"
 
 struct ebpf_inst;
