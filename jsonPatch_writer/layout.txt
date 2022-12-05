@@ -1,0 +1,69 @@
+
+*** Dumping AST Record Layout
+Type: struct Stack_frame
+
+Layout: <ASTRecordLayout
+  Size:448
+  DataSize:448
+  Alignment:32
+  FieldOffsets: [0, 64, 128, 192, 256, 320, 384]>
+
+*** Dumping IRgen Record Layout
+Record: RecordDecl 0x2144b48 <./05-cve.bpf.h:31:9, line:40:1> line:31:16 struct Stack_frame definition
+|-PackedAttr 0x2144ee8 <line:40:18>
+|-AlignedAttr 0x2144f60 <col:30, col:39> aligned
+| `-ConstantExpr 0x2144f40 <col:38> 'int'
+|   |-value: Int 4
+|   `-IntegerLiteral 0x2144ec8 <col:38> 'int' 4
+|-FieldDecl 0x2144c08 <line:33:2, col:16> col:16 di 'unsigned long'
+|-FieldDecl 0x2144c70 <line:34:2, col:16> col:16 si 'unsigned long'
+|-FieldDecl 0x2144cd8 <line:35:2, col:16> col:16 dx 'unsigned long'
+|-FieldDecl 0x2144d40 <line:36:2, col:16> col:16 cx 'unsigned long'
+|-FieldDecl 0x2144da8 <line:37:2, col:16> col:16 r8 'unsigned long'
+|-FieldDecl 0x2144e10 <line:38:2, col:16> col:16 r9 'unsigned long'
+`-FieldDecl 0x2144e78 <line:39:2, col:16> col:16 sp 'unsigned long'
+
+Layout: <CGRecordLayout
+  LLVMType:%struct.Stack_frame = type { i64, i64, i64, i64, i64, i64, i64 }
+  IsZeroInitializable:1
+  BitFields:[
+]>
+
+*** Dumping AST Record Layout
+Type: struct h264Picture
+
+Layout: <ASTRecordLayout
+  Size:32
+  DataSize:32
+  Alignment:32
+  FieldOffsets: [0]>
+
+*** Dumping IRgen Record Layout
+Record: RecordDecl 0x2145058 <./05-cve.bpf.h:43:9, line:46:1> line:43:16 struct h264Picture definition
+`-FieldDecl 0x2145118 <line:45:2, col:6> col:6 needs_realloc 'int'
+
+Layout: <CGRecordLayout
+  LLVMType:%struct.h264Picture = type { i32 }
+  IsZeroInitializable:1
+  BitFields:[
+]>
+
+*** Dumping AST Record Layout
+Type: struct h264Context
+
+Layout: <ASTRecordLayout
+  Size:1216
+  DataSize:1216
+  Alignment:64
+  FieldOffsets: [0, 64]>
+
+*** Dumping IRgen Record Layout
+Record: RecordDecl 0x2145238 <./05-cve.bpf.h:48:9, line:52:1> line:48:16 struct h264Context definition
+|-FieldDecl 0x2145368 <line:50:2, col:15> col:15 DPB 'H264Picture *'
+`-FieldDecl 0x2145498 <line:51:2, col:29> col:15 delayed_pic 'H264Picture *[18]'
+
+Layout: <CGRecordLayout
+  LLVMType:%struct.h264Context = type { %struct.h264Picture*, [18 x %struct.h264Picture*] }
+  IsZeroInitializable:1
+  BitFields:[
+]>

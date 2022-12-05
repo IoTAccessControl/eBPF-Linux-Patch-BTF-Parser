@@ -1,5 +1,5 @@
 diff --git a/src/btf.c b/src/btf.c
-index 3aa58f2..c73d1ea 100644
+index 3aa58f2..b258ce1 100644
 --- a/src/btf.c
 +++ b/src/btf.c
 @@ -6,6 +6,7 @@
@@ -315,7 +315,7 @@ index 3aa58f2..c73d1ea 100644
 +	if (new_off < 0)
 +		return new_off;
 +	RECORD_FUNC_MAP("%s %s\n", s, func_hash);
-+	// printf("is find:%d %s %s\n", is_added, s, func_hash);
++	printf("is find:%d %s %s\n", is_added, s, func_hash);
  
  	btf->hdr->str_len += len; /* new unique string, adjust data length */
  	return btf->start_str_off + new_off;

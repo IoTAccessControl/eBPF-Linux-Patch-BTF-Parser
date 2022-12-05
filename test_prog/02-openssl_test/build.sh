@@ -9,7 +9,7 @@ build_openssl() {
 	fi
 	cd openssl-3.0.5
 	./config -d
-	make -j4 && make install
+	make -j4 && sudo make install
 }
 
 pushd ${self_dir}

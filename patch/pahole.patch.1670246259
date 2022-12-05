@@ -1,5 +1,5 @@
 diff --git a/src/btf.c b/src/btf.c
-index 3aa58f2..c73d1ea 100644
+index 3aa58f2..7553e1e 100644
 --- a/src/btf.c
 +++ b/src/btf.c
 @@ -6,6 +6,7 @@
@@ -51,16 +51,17 @@ index 3aa58f2..c73d1ea 100644
  {
  	long old_off, new_off, len;
  	void *p;
-@@ -1676,11 +1698,273 @@ int btf__add_str(struct btf *btf, const char *s)
+@@ -1676,11 +1698,246 @@ int btf__add_str(struct btf *btf, const char *s)
  		return btf->start_str_off + old_off; /* duplicated string, return existing offset */
  	if (err)
  		return err;
+-
 +	
 +	RECORD_FUNC_MAP("%s\n", s);
-+	btf->hdr->str_len += len; /* new unique string, adjust data length */
-+	return btf->start_str_off + new_off;
-+}
-+
+ 	btf->hdr->str_len += len; /* new unique string, adjust data length */
+ 	return btf->start_str_off + new_off;
+ }
+ 
 +// BKDR Hash Function
 +unsigned short BKDRHash(char *str)
 +{
@@ -138,7 +139,8 @@ index 3aa58f2..c73d1ea 100644
 +		// #define HASH_TEST_COLLIDE 
 +		#ifdef HASH_TEST_COLLIDE
 +			if (strncmp(raw_str, "ngx_", 4) == 0) {
-+				sprintf(cur_hash, "ngx_%d_%d", strlen(raw_str), i);
++				if (rand() % 2 == 0) 
++					sprintf(cur_hash, "%hu", 1234 + i);
 +			}
 +			if (cur_hash[0] == 0) {
 +				sprintf(cur_hash, "%hu", anony_str_hash[i]((char *) raw_str));
@@ -164,30 +166,23 @@ index 3aa58f2..c73d1ea 100644
 +	int cap;
 +} exist_str_buf_s = {0};
 +
-+static size_t my_str_hash_fn(const void *key, void *ctx) {
++static size_t my_str_hash_fn(const void *key, void *ctx)
++{	
 +	const struct exist_str_buf *str_buf = ctx;
 +	const char *str = str_buf->buf + (long) key;
 +	return str_hash(str);
 +}
 +
-+static bool my_str_equal_fn(const void *k1, const void *k2, void *ctx) {
++static bool my_str_equal_fn(const void *k1, const void *k2, void *ctx)
++{
 +	const struct exist_str_buf *str_buf = ctx;
 +	const char *str1 = str_buf->buf + (long) k1;
 +	const char *str2 = str_buf->buf + (long) k2;
 +	return strcmp(str1, str2) == 0;
 +}
 +
-+static void init_my_hashmap() {
-+	if (exist_strs == NULL) {
-+		exist_strs = hashmap__new(my_str_hash_fn, my_str_equal_fn, &exist_str_buf_s);
-+		if (exist_strs == NULL) {
-+			fprintf(stderr, "Failed to create hashmap for exist_strs");
-+			exit(-1);
-+		}
-+	}
-+}
-+
-+static long exist_str_buf_append_str(const char *str, int len) {
++static int exist_str_buf_append_str(const char *str, int len)
++{
 +	if (exist_str_buf_s.pos + len > exist_str_buf_s.cap) {
 +		exist_str_buf_s.cap = exist_str_buf_s.cap * 2 + 32;
 +		exist_str_buf_s.buf = realloc(exist_str_buf_s.buf, exist_str_buf_s.cap);
@@ -196,7 +191,6 @@ index 3aa58f2..c73d1ea 100644
 +	// int ret = exist_str_buf_s.pos;
 +	return exist_str_buf_s.pos;
 +}
-+
 +static void free_hash_buf() {
 +	if (exist_str_buf_s.buf) {
 +		free(exist_str_buf_s.buf);
@@ -208,9 +202,19 @@ index 3aa58f2..c73d1ea 100644
 +	}
 +}
 +
-+// return is exist(is added):true, not exist: false 
-+static bool my_hash_add_str(const char *s) {
++static bool is_raw_str_added(const char *s) 
++{
 +	long new_off = 0;
++
++	if (exist_strs == NULL) {
++		exist_strs = hashmap__new(my_str_hash_fn, my_str_equal_fn, &exist_str_buf_s);
++		if (exist_strs == NULL) {
++			fprintf(stderr, "Failed to create hashmap for exist_strs");
++			exit(-1);
++			return false;
++		}
++	}
++
 +	int len = strlen(s) + 1;
 +
 +	// temply store the string
@@ -225,43 +229,13 @@ index 3aa58f2..c73d1ea 100644
 +	return false;
 +}
 +
-+static bool my_hash_str_exist(const char *s) {
-+	int len = strlen(s) + 1;
-+	long new_off = exist_str_buf_append_str(s, len);
-+	return hashmap__find(exist_strs, (void *)new_off, (void **)&new_off) != 0;
-+}
-+
-+static void chack_and_add_to_cache(const char *raw_str, char *hash_str) {
-+	assert(exist_strs != NULL);
-+
-+	char next_hash[128] = {0};
-+	// get a unused hash for current string
-+	for (int i = 0; i < ANONY_HASH_FUNC_NUM; i++) {
-+		get_hash_str_n(i, hash_str, raw_str);
-+		if (!my_hash_str_exist(hash_str)) {
-+			break;
-+		}
-+	}
-+
-+	// marked all str-hash of a raw string as used
-+	for (int i = 0; i < ANONY_HASH_FUNC_NUM; i++) {
-+		get_hash_str_n(i, next_hash, raw_str);
-+		my_hash_add_str(next_hash);
-+	}
-+	// printf("hash str----> %s %s\n", raw_str, hash_str);
-+}
-+
 +static int btf__add_anony_str(struct btf *btf, const char *s)
 +{
 +	long old_off, new_off, len;
 +	void *p;
 +	int ret;
 +	int err;
-+
-+	init_my_hashmap();
-+
-+	bool is_added = my_hash_str_exist(s);
-+	
++	bool is_added = is_raw_str_added(s);
 +	// is_added = true;
 +	char func_hash[128] = {0};
 +
@@ -290,42 +264,42 @@ index 3aa58f2..c73d1ea 100644
 +	if (btf_ensure_modifiable(btf))
 +		return -ENOMEM;
 +
-+	// not exist
-+	my_hash_add_str(s); // add raw string
-+	// generate a unique func_hash for s
-+	chack_and_add_to_cache(s, func_hash);
++	// add hash for new string
++	for (int i = 0; i < STR_HASH_ROUND; i++) {
++		get_hash_str_n(i, func_hash, s);
++		len = strlen(func_hash) + 1;
++		p = btf_add_str_mem(btf, len);
++		if (!p)
++			return -ENOMEM;
 +
-+	len = strlen(func_hash) + 1;
-+	p = btf_add_str_mem(btf, len);
-+	if (!p)
-+		return -ENOMEM;
++		new_off = btf->hdr->str_len;
++		memcpy(p, func_hash, len);
 +
-+	new_off = btf->hdr->str_len;
-+	memcpy(p, func_hash, len);
++		old_off = btf->hdr->str_len;
++		err = hashmap__insert(btf->strs_hash, (void *)new_off, (void *)new_off,
++				HASHMAP_ADD, (const void **)&old_off, NULL);
++		if (err == -EEXIST) {
++			// hash collide
++			continue;
++		}
++		if (err)
++			return err;
++		if (new_off < 0)
++			return new_off;
++		RECORD_FUNC_MAP("%s %s\n", s, func_hash);
 +
-+	old_off = btf->hdr->str_len;
-+	err = hashmap__insert(btf->strs_hash, (void *)new_off, (void *)new_off,
-+			HASHMAP_ADD, (const void **)&old_off, NULL);
-+	if (err == -EEXIST) {
-+		// should not exist
-+		assert(0);
++		btf->hdr->str_len += len; /* new unique string, adjust data length */
++		return btf->start_str_off + new_off;
 +	}
-+	if (err)
-+		return err;
-+	if (new_off < 0)
-+		return new_off;
-+	RECORD_FUNC_MAP("%s %s\n", s, func_hash);
-+	// printf("is find:%d %s %s\n", is_added, s, func_hash);
- 
- 	btf->hdr->str_len += len; /* new unique string, adjust data length */
- 	return btf->start_str_off + new_off;
- }
- 
++
++	return 0;
++}
++
 +
  static void *btf_add_type_mem(struct btf *btf, size_t add_sz)
  {
  	return btf_add_mem(&btf->types_data, &btf->types_data_cap, 1,
-@@ -1747,7 +2031,8 @@ int btf__add_int(struct btf *btf, const char *name, size_t byte_sz, int encoding
+@@ -1747,7 +2004,8 @@ int btf__add_int(struct btf *btf, const char *name, size_t byte_sz, int encoding
  	 * but that shouldn't be a problem, because BTF can't be constructed
  	 * completely anyway and will most probably be just discarded
  	 */
@@ -335,7 +309,7 @@ index 3aa58f2..c73d1ea 100644
  	if (name_off < 0)
  		return name_off;
  
-@@ -1830,7 +2115,17 @@ static int btf_add_ref_kind(struct btf *btf, int kind, const char *name, int ref
+@@ -1830,7 +2088,17 @@ static int btf_add_ref_kind(struct btf *btf, int kind, const char *name, int ref
  		return -ENOMEM;
  
  	if (name && name[0]) {
@@ -354,7 +328,7 @@ index 3aa58f2..c73d1ea 100644
  		if (name_off < 0)
  			return name_off;
  	}
-@@ -2008,7 +2303,8 @@ int btf__add_field(struct btf *btf, const char *name, int type_id,
+@@ -2008,7 +2276,8 @@ int btf__add_field(struct btf *btf, const char *name, int type_id,
  		return -ENOMEM;
  
  	if (name && name[0]) {

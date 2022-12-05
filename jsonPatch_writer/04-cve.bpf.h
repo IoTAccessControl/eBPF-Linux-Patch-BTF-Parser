@@ -1,17 +1,5 @@
 // 定义参数获取宏
 #define REGS_SP(x) ((x)->sp)
-<<<<<<< HEAD
-#define REGS_PARM1(x) ((x)->di)
-#define REGS_PARM2(x) ((x)->si)
-#define REGS_PARM3(x) ((x)->dx)
-#define REGS_PARM4(x) ((x)->cx)
-#define REGS_PARM5(x) ((x)->r8)
-// #define REGS_PARM5(x) ((x)->r9)
-
-// static uint32_t (*new_sqrt)(uint32_t x) = (void *)1;
-// int (*strcmp_ext)(const char *s1, const char *s2) = (void *)2;
-// static uint64_t (*unwind)(uint64_t i) = (void *)3;
-=======
 #define REGS_PARAM(x, index) \
 ({ \
 	unsigned long ret; \
@@ -39,7 +27,6 @@
 		ret = 0; \
 	} \
 ret; })
->>>>>>> 17093a2d86a4bf7d6b726bb98521405849ef8689
 
 typedef struct Stack_frame
 {
