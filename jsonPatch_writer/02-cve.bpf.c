@@ -6,7 +6,7 @@ commit link: https://github.com/openssl/openssl/commit/1421e0c584ae9120ca1b88098
 
 #include <stdio.h>
 #include <stdint.h>
-#include "02-cve.bpf.h"
+#include "ebpf_patch_common.h"
 
 int eBPF_Patch(stack_frame *ctx)
 {

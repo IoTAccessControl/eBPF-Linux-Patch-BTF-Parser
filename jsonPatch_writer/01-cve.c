@@ -19,7 +19,6 @@ void getEbpfPatch(const char *patchName);
 
 static int8_t *bytecode;
 uint64_t bytecode_len;
-int test_global = 2022;
 
 typedef struct Test_For_Reloc
 {
