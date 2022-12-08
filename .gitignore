@@ -14,3 +14,4 @@ test_prog/*/bin_btf/
 test_prog/02-openssl_test/sample/hash_file
 dump_btf
 func_diff
+pahole.patch.bak.*
