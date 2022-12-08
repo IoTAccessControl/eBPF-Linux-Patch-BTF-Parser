@@ -8,9 +8,20 @@ commit link: https://github.com/FFmpeg/FFmpeg/commit/e8714f6f93d1a32f4e465520996
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include "05-cve.bpf.h"
+#include "ebpf_patch_common.h"
 
-void dummy_cve_2015_3417_ff_h264_free_tables(stack_frame *ctx)
+typedef struct h264Picture
+{
+	int needs_realloc;
+} H264Picture;
+
+typedef struct h264Context
+{
+	H264Picture *DPB;
+	H264Picture *delayed_pic[18];
+} H264Context;
+
+void eBPF_Patch(stack_frame *ctx)
 {
 	H264Context *h = (H264Context *)REGS_PARAM(ctx, 1);
 	int free_rbsp = REGS_PARAM(ctx, 2);

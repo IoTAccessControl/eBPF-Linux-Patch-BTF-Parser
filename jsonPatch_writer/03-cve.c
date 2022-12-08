@@ -50,25 +50,25 @@ uint64_t bytecode_len;
 int orig_c0(long *t, apr_time_exp_t *xt)
 {
 	long year = xt->tm_year;
-	long days;
-	static const int dayoffset[12] = {306, 337, 0, 31, 61, 92, 122, 153, 184, 214, 245, 275};
+	// long days;
+	// static const int dayoffset[12] = {306, 337, 0, 31, 61, 92, 122, 153, 184, 214, 245, 275};
 
 	if (xt->tm_mon < 2)
 		year--;
-	days = year * 365 + year / 4 - year / 100 + (year / 100 + 3) / 4;
 
-	days = year * 365 + year / 4 - year / 100 + (year / 100 + 3) / 4;
-	days += dayoffset[xt->tm_mon] + xt->tm_mday - 1;
-	days -= 25508; /* 1 jan 1970 is 25508 days since 1 mar 1900 */
-	days = ((days * 24 + xt->tm_hour) * 60 + xt->tm_min) * 60 + xt->tm_sec;
+	return 20000;
+	// days = year * 365 + year / 4 - year / 100 + (year / 100 + 3) / 4;
+	// days += dayoffset[xt->tm_mon] + xt->tm_mday - 1;
+	// days -= 25508; /* 1 jan 1970 is 25508 days since 1 mar 1900 */
+	// days = ((days * 24 + xt->tm_hour) * 60 + xt->tm_min) * 60 + xt->tm_sec;
 
-	if (days < 0)
-	{
-		return 20000;
-	}
-	*t = days * (long)1000000 + xt->tm_usec;
+	// if (days < 0)
+	// {
+	// 	return 20000;
+	// }
+	// *t = days * (long)1000000 + xt->tm_usec;
 
-	return 0;
+	// return 0;
 }
 
 int run_ebpf(stack_frame *frame, const char *code, unsigned long code_len)

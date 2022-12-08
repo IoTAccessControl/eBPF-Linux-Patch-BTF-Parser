@@ -7,5 +7,6 @@
 	"address_patchHandler": "0x0",
 	"ebpf_patch": "",
 	"ebpf_patch_len": 0,
+	"pre_install_tests": [{"ebpf_test_code_1": "", "len": 0}, {"ebpf_test_code_2": "", "len": 0}],
 	"description": "This is a template for a ebpf patch."
 }

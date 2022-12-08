@@ -4,9 +4,35 @@ cve link: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-1473
 commit link: https://github.com/openssl/openssl/commit/64c85430f95200b6b51fe9475bd5203f7c19daf1
 */
 
-#define NULL 0
+#include <stdint.h>
+#include "ebpf_patch_common.h"
 
-#include "04-cve.bpf.h"
+typedef struct lhash_node_st
+{
+	void *data;
+	struct lhash_node_st *next;
+	unsigned long hash;
+} OPENSSL_LH_NODE;
+
+typedef int (*OPENSSL_LH_COMPFUNC)(const void *, const void *);
+typedef unsigned long (*OPENSSL_LH_HASHFUNC)(const void *);
+
+typedef struct lhash_st
+{
+	OPENSSL_LH_NODE **b;
+	OPENSSL_LH_COMPFUNC comp;
+	OPENSSL_LH_HASHFUNC hash;
+	unsigned int num_nodes;
+	unsigned int num_alloc_nodes;
+	unsigned int p;
+	unsigned int pmax;
+	unsigned long up_load;	 /* load times 256 */
+	unsigned long down_load; /* load times 256 */
+	unsigned long num_items;
+	int error;
+} OPENSSL_LHASH;
+
+#define NULL ((void *)0)
 
 int eBPF_Patch(stack_frame *ctx)
 {

@@ -33,33 +33,33 @@ python3 gen_patch.py -e bin/01-cve -f orig_c0 -s 01-cve.bpf.c -o bin/01-cve.patc
 ```shell
 make test
 ```
+或者
+```shell
+make main_test
+```
+(所有cve集中在一个文件，方便查看)
 
 补丁示例：
 ```shell
 {
     "name": "01-cve.bpf.c",
     "version": "0.0.1",
-    "pid": 18482,
-    "export_data_types": [
+    "pid": 175579,
+    "export_data_types": "",
+    "address_vulFunc": "0x6766",
+    "address_patchHandler": "0x68a1",
+    "ebpf_patch": "\\x61\\x12\\x00\\x00\\x00\\x00\\x00\\x00\\x61\\x11\\x04\\x00\\x00\\x00\\x00\\x00\\x67\\x01\\x00\\x00\\x20\\x00\\x00\\x00\\x4f\\x21\\x00\\x00\\x00\\x00\\x00\\x00\\xb7\\x00\\x00\\x00\\x01\\x00\\x00\\x00\\x61\\x11\\x04\\x00\\x00\\x00\\x00\\x00\\x67\\x01\\x00\\x00\\x20\\x00\\x00\\x00\\xc7\\x01\\x00\\x00\\x20\\x00\\x00\\x00\\x65\\x01\\x02\\x00\\xb8\\x0b\\x00\\x00\\xb7\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x85\\x00\\x00\\x00\\x01\\x00\\x00\\x00\\x95\\x00\\x00\\x00\\x00\\x00\\x00\\x00",
+    "ebpf_patch_len": 97,
+    "pre_install_tests": [
         {
-            "Fields": [
-                {
-                    "Name": "a1",
-                    "Type": "int",
-                    "LLVMType": "i32",
-                    "FieldOffset": 0
-                }
-            ],
-            "Struct Name": "Stack_frame",
-            "Size": 32,
-            "DataSize": 32,
-            "Alignment": 32
+            "ebpf_test_code_1": "",
+            "len": 0
+        },
+        {
+            "ebpf_test_code_2": "",
+            "len": 0
         }
     ],
-    "address_vulFunc": "0x1539",
-    "address_patchHandler": "0x166e",
-    "ebpf_patch": "\\xb7\\x00\\x00\\x00\\x01\\x00\\x00\\x00\\x61\\x11\\x00\\x00\\x00\\x00\\x00\\x00\\x67\\x01\\x00\\x00\\x20\\x00\\x00\\x00\\xc7\\x01\\x00\\x00\\x20\\x00\\x00\\x00\\x65\\x01\\x02\\x00\\x88\\x13\\x00\\x00\\xb7\\x01\\x00\\x00\\x64\\x00\\x00\\x00\\x85\\x00\\x00\\x00\\x01\\x00\\x00\\x00\\x95\\x00\\x00\\x00\\x00\\x00\\x00\\x00",
-    "ebpf_patch_len": 65,
     "description": "This is a template for a ebpf patch."
 }
 ```
