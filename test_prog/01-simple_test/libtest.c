@@ -1,8 +1,8 @@
 #include "libtest.h"
 
-int VERSION = 3;
+long VERSION = 3;
 
-int libtest_version() {
+long libtest_version() {
 	return VERSION;
 }
 

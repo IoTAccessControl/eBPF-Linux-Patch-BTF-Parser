@@ -18,6 +18,14 @@ bash scripts/build_pahole_patch.sh
 
 # 测试pahole
 deps/dwarves-build/pahole -J test_prog/03-nginx_test/bin_btf/nginx
+
+
+# global变量实现
+deps/dwarves-build/pahole -J test_prog/01-simple_test/bin/libtest.so
+btf_parser/dump_btf test_prog/01-simple_test/bin_btf/libtest.so > func_btf.txt
+
+# 查看drawf信息
+readelf -wi test_prog/01-simple_test/bin/libtest.so
 ```
 
 

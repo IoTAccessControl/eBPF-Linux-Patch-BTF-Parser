@@ -1,5 +1,5 @@
 diff --git a/src/btf.c b/src/btf.c
-index 3aa58f2..ab381d5 100644
+index 3aa58f2..c73d1ea 100644
 --- a/src/btf.c
 +++ b/src/btf.c
 @@ -6,6 +6,7 @@
@@ -364,16 +364,3 @@ index 3aa58f2..ab381d5 100644
  		if (name_off < 0)
  			return name_off;
  	}
-@@ -2363,7 +2659,11 @@ int btf__add_var(struct btf *btf, const char *name, int linkage, int type_id)
- 	if (!t)
- 		return -ENOMEM;
- 
--	name_off = btf__add_str(btf, name);
-+	if (linkage == BTF_VAR_GLOBAL_EXTERN) {
-+		name_off = btf__add_anony_str(btf, name);
-+	} else {
-+		name_off = btf__add_str(btf, name);
-+	}
- 	if (name_off < 0)
- 		return name_off;
- 

@@ -1,0 +1,15 @@
+[1] STRUCT '0' size=8 vlen=2
+	'98' type_id=2 bits_offset=0
+	'97' type_id=3 bits_offset=32
+[2] INT 'char' size=1 bits_offset=0 nr_bits=8 encoding=(none)
+[3] INT 'int' size=4 bits_offset=0 nr_bits=32 encoding=SIGNED
+[4] PTR '(anon)' type_id=1
+[5] FUNC_PROTO '(anon)' ret_type_id=3 vlen=1
+	'0' type_id=4
+[6] FUNC '15906' type_id=5 linkage=static
+[7] FUNC_PROTO '(anon)' ret_type_id=3 vlen=2
+	'0' type_id=3
+	'0' type_id=3
+[8] FUNC '26109' type_id=7 linkage=static
+[9] FUNC_PROTO '(anon)' ret_type_id=3 vlen=0
+[10] FUNC '50248' type_id=9 linkage=static
